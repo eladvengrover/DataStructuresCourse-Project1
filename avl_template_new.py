@@ -239,7 +239,14 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        return None
+        if self.root is None:
+            return None
+        node = self.root
+        left = node.left
+        while left.isRealNode():
+            node = left
+            left = node.left
+        return node.value
 
     """returns the value of the last item in the list
 
@@ -248,7 +255,14 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        return None
+        if self.root is None:
+            return None
+        node = self.root
+        right = node.right
+        while right.isRealNode():
+            node = right
+            right = node.right
+        return node.value
 
     """returns an array representing list 
 
