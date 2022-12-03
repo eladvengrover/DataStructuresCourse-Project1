@@ -1,6 +1,6 @@
 #username - graiver1
 #id1      - 206363368
-#name1    - Shachar Graiver
+#name1    - Shahar Graiver
 #id2      - 209008135
 #name2    - Elad Vengrover
 
