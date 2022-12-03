@@ -134,7 +134,7 @@ class AVLTreeList(object):
 	@returns: True if the list is empty, False otherwise
 	"""
 	def empty(self):
-		return None
+		return self.size == 0
 
 
 	"""retrieves the value of the i'th item in the list
@@ -204,7 +204,7 @@ class AVLTreeList(object):
 	@returns: the size of the list
 	"""
 	def length(self):
-		return None
+		return self.size
 
 	"""sort the info values of the list
 
@@ -250,6 +250,6 @@ class AVLTreeList(object):
 	@returns: the root, None if the list is empty
 	"""
 	def getRoot(self):
-		return None
+		return self.root
 
 
