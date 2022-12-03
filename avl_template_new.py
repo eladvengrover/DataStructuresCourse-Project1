@@ -199,7 +199,7 @@ class AVLTreeList(object):
             node = self.root
             r = node.left.size + 1
             if r == k:
-                return node
+                return node.value
             elif r > k:
                 return retrieve_rec(node.left, k)
             else:
