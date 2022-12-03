@@ -23,7 +23,6 @@ class AVLNode(object):
         self.height = -1  # Balance factor
         self.isReal = False if value is None else True
         self.size = 1 if self.isReal else 0
-        self.rank = 0 if self.isReal else -1
 
     """returns the left child
     @rtype: AVLNode
@@ -77,14 +76,7 @@ class AVLNode(object):
 
     def getSize(self):
         return self.size
-    """returns the rank
 
-    @rtype: int
-    @returns: the rank of self, -1 if the node is virtual
-    """
-
-    def getRank(self):
-        return self.rank
 
     """sets left child
 
@@ -94,6 +86,7 @@ class AVLNode(object):
 
     def setLeft(self, node):
         self.left = node
+        node.setParent(self)
 
     """sets right child
 
@@ -103,6 +96,7 @@ class AVLNode(object):
 
     def setRight(self, node):
         self.right = node
+        node.setParent(self)
 
     """sets parent
 
@@ -138,16 +132,6 @@ class AVLNode(object):
         """
     def setSize(self, s):
         self.size = s
-
-    """sets the rank of the node
-
-        @type r: int
-        @param r: the rank
-        """
-    def setRank(self, r):
-        self.rank = r
-
-
 
     """returns whether self is not a virtual node 
 
@@ -185,6 +169,19 @@ class AVLTreeList(object):
     def empty(self):
         return self.size == 0
 
+    def retrieve_node(self, i):
+        def retrieve_rec(node, k):
+            node = self.root
+            r = node.left.size + 1
+            if r == k:
+                return node
+            elif r > k:
+                return retrieve_rec(node.left, k)
+            else:
+                return retrieve_rec(node.right, k - r)
+
+        return retrieve_rec(self.root, i + 1)
+
     """retrieves the value of the i'th item in the list
 
     @type i: int
@@ -195,16 +192,39 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-        def retrieve_rec(node, k):
-            node = self.root
-            r = node.left.size + 1
-            if r == k:
-                return node.value
-            elif r > k:
-                return retrieve_rec(node.left, k)
-            else:
-                return retrieve_rec(node.right, k-r)
-        return retrieve_rec(self.root, i+1)
+       return self.retrieve_node(i).value
+
+    def get_predecessor(self, node):
+        if node.getLeft() is not None:
+            node_tree = AVLTreeList()
+            node_tree.insert(0, node.getLeft())
+            return node_tree.get_max()
+        parent_node = node.getParent()
+        while parent_node is not None and node == parent_node.getLeft():
+            node = parent_node
+            parent_node = node.getParent()
+        return parent_node
+
+
+    def get_min(self):
+        if self.root is None:
+            return None
+        node = self.root
+        left = node.left
+        while left.isRealNode():
+            node = left
+            left = node.left
+        return node
+
+    def get_max(self):
+        if self.root is None:
+            return None
+        node = self.root
+        right = node.right
+        while right.isRealNode():
+            node = right
+            right = node.right
+        return node
 
     """inserts val at position i in the list
 
@@ -218,7 +238,18 @@ class AVLTreeList(object):
     """
 
     def insert(self, i, val):
-        return -1
+        n = self.length()
+        node = AVLNode(val)
+        if i == n:
+            self.get_max().setRight(node)
+        else:
+            prev_node = self.retrieve_node(i)
+            if prev_node.getLeft() is None:
+                prev_node.setLeft(node)
+            else:
+                self.get_predecessor(prev_node).setRight(node)
+        # fix the tree - update size and height of each node to root
+
 
     """deletes the i'th item in the list
 
@@ -239,14 +270,7 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        if self.root is None:
-            return None
-        node = self.root
-        left = node.left
-        while left.isRealNode():
-            node = left
-            left = node.left
-        return node.value
+        return self.get_min().value
 
     """returns the value of the last item in the list
 
@@ -255,14 +279,7 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        if self.root is None:
-            return None
-        node = self.root
-        right = node.right
-        while right.isRealNode():
-            node = right
-            right = node.right
-        return node.value
+        return self.get_max().value
 
     """returns an array representing list 
 
