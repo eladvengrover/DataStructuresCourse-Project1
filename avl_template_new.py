@@ -177,7 +177,16 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-        return None
+        def retrieve_rec(node, k):
+            node = self.root
+            r = node.left.size + 1
+            if r == k:
+                return node
+            elif r > k:
+                return retrieve_rec(node.left, k)
+            else:
+                return retrieve_rec(node.right, k-r)
+        return retrieve_rec(self.root, i+1)
 
     """inserts val at position i in the list
 
