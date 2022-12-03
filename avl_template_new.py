@@ -23,6 +23,7 @@ class AVLNode(object):
         self.height = -1  # Balance factor
         self.isReal = False if value is None else True
         self.size = 1 if self.isReal else 0
+        self.rank = 0 if self.isReal else -1
 
     """returns the left child
     @rtype: AVLNode
@@ -76,6 +77,14 @@ class AVLNode(object):
 
     def getSize(self):
         return self.size
+    """returns the rank
+
+    @rtype: int
+    @returns: the rank of self, -1 if the node is virtual
+    """
+
+    def getRank(self):
+        return self.rank
 
     """sets left child
 
@@ -129,6 +138,15 @@ class AVLNode(object):
         """
     def setSize(self, s):
         self.size = s
+
+    """sets the rank of the node
+
+        @type r: int
+        @param r: the rank
+        """
+    def setRank(self, r):
+        self.rank = r
+
 
 
     """returns whether self is not a virtual node 
