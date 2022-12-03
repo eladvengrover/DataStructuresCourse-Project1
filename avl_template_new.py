@@ -20,7 +20,7 @@ class AVLNode(object):
 		self.right = None
 		self.parent = None
 		self.height = -1 # Balance factor
-		
+		self.isReal = False if value is None else True
 
 	"""returns the left child
 	@rtype: AVLNode
@@ -108,7 +108,7 @@ class AVLNode(object):
 	@returns: False if self is a virtual node, True otherwise.
 	"""
 	def isRealNode(self):
-		return False
+		return self.isReal
 
 
 
