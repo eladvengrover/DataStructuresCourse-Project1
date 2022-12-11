@@ -20,7 +20,7 @@ class AVLNode(object):
         self.left = None
         self.right = None
         self.parent = None
-        self.height = -1  # Balance factor
+        self.height = -1
         self.isReal = False if value is None else True
         self.size = 1 if self.isReal else 0
 
@@ -77,7 +77,6 @@ class AVLNode(object):
     def getSize(self):
         return self.size
 
-
     """sets left child
 
     @type node: AVLNode
@@ -130,6 +129,7 @@ class AVLNode(object):
         @type s: int
         @param s: the size
         """
+
     def setSize(self, s):
         self.size = s
 
@@ -171,14 +171,12 @@ class AVLTreeList(object):
 
     def retrieve_node(self, i):
         def retrieve_rec(node, k):
-            node = self.root
             r = node.left.size + 1
             if r == k:
                 return node
             elif r > k:
                 return retrieve_rec(node.left, k)
-            else:
-                return retrieve_rec(node.right, k - r)
+            return retrieve_rec(node.right, k - r)
 
         return retrieve_rec(self.root, i + 1)
 
@@ -192,7 +190,7 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-       return self.retrieve_node(i).value
+        return self.retrieve_node(i).value
 
     def get_predecessor(self, node):
         if node.getLeft() is not None:
@@ -204,7 +202,6 @@ class AVLTreeList(object):
             node = parent_node
             parent_node = node.getParent()
         return parent_node
-
 
     def get_min(self):
         if self.root is None:
@@ -249,7 +246,6 @@ class AVLTreeList(object):
             else:
                 self.get_predecessor(prev_node).setRight(node)
         # fix the tree - update size and height of each node to root
-
 
     """deletes the i'th item in the list
 
