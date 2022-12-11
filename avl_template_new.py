@@ -190,7 +190,9 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-        return self.retrieve_node(i).value
+        if 0 <= i <= self.size - 1:
+            return self.retrieve_node(i).value
+        return None
 
     def get_predecessor(self, node):
         if node.getLeft() is not None:
