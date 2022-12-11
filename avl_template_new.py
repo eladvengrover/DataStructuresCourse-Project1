@@ -169,6 +169,14 @@ class AVLTreeList(object):
     def empty(self):
         return self.size == 0
 
+    """"retrieves the i'th item in the list
+
+    @type i: int
+    @pre: 0 <= i < self.length() 
+    @param i: index in the list
+    @rtype: AVLNode
+    @returns: the i'th item in the list
+    """
     def retrieve_node(self, i):
         def retrieve_rec(node, k):
             r = node.left.size + 1
@@ -190,6 +198,7 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
+        # TODO - check if necessary to check input validity. fix comments here and on retrieve_node.
         if 0 <= i <= self.size - 1:
             return self.retrieve_node(i).value
         return None
@@ -205,6 +214,12 @@ class AVLTreeList(object):
             parent_node = node.getParent()
         return parent_node
 
+    """returns the first item in the list
+
+        @rtype: AVLNode
+        @returns: the first item, None if the list is empty
+        """
+
     def get_min(self):
         if self.root is None:
             return None
@@ -215,6 +230,11 @@ class AVLTreeList(object):
             left = node.left
         return node
 
+    """returns the last item in the list
+
+           @rtype: AVLNode
+           @returns: the last item, None if the list is empty
+           """
     def get_max(self):
         if self.root is None:
             return None
