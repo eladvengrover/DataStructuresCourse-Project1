@@ -81,28 +81,20 @@ class AVLNode(object):
         return self.size
 
     """sets left child and sets node's parent accordingly.
-    if self is a leaf and node is real - delete right virtual node.
     @type node: AVLNode
     @param node: a node
     """
 
     def setLeft(self, node):
-        if node is not None and node.isRealNode():
-            if node.getRight().isRealNode() is False:
-                node.setRight(None)
         self.left = node
         node.setParent(self)
 
     """sets right child and sets node's parent accordingly.
-    if self is a leaf and node is real - delete left virtual node.
     @type node: AVLNode
     @param node: a node
     """
 
     def setRight(self, node):
-        if node is not None and node.isRealNode():
-            if node.getLeft().isRealNode() is False:
-                node.setLeft(None)
         self.right = node
         node.setParent(self)
 
@@ -150,6 +142,15 @@ class AVLNode(object):
 
     def isRealNode(self):
         return self.isReal
+
+    """returns whether self is a leaf 
+
+        @rtype: bool
+        @returns: True if self is a leaf, False otherwise.
+        """
+
+    def isLeaf(self):
+        return self.height == 0
 
     """set children to be virtual nodes """
     def add_virtual_children(self):
@@ -287,25 +288,32 @@ class AVLTreeList(object):
     def insert(self, i, val):
         n = self.length()
         node = AVLNode(val)
+        node.add_virtual_children()
         if n == 0:
             self.root = node
             self.first = node
             self.last = node
             self.size = 1
-            node.add_virtual_children()
             return 0
         if i == n:
-            self.get_max().setRight(node)
+            self.last.setRight(node)
+            self.last.setLeft(None)  # Delete virtual left son
             self.last = node
         else:
             if i == 0:
-                self.first = node
+                self.first = node  # Updating self.first
             prev_node = self.retrieve_node(i)
-            if prev_node.getLeft() is None:
+            if prev_node.getLeft() is None:  # Case 1: prev_node has only right son
                 prev_node.setLeft(node)
-            else:
-                self.get_predecessor(prev_node).setRight(node)
-        node.add_virtual_children()
+            elif prev_node.isLeaf():  # Case 2: prev_node is a leaf
+                prev_node.setLeft(node)
+                self.last.setRight(None)  # Delete virtual right son
+            else:  # Case 3: prev_node has left son
+                node_predecessor = self.get_predecessor(prev_node)
+                if node_predecessor.isLeaf():
+                    node_predecessor.setLeft(None)  # Delete virtual left  son
+                node_predecessor.setRight(node)
+
         return self.fix_the_tree(node)
 
     def fix_the_tree(self, inserted_node):
@@ -406,7 +414,7 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        return self.first.value
+        return self.first.getValue()
 
     """returns the value of the last item in the list
 
@@ -415,7 +423,7 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        return self.last.value
+        return self.last.getValue()
 
     """returns an array representing list 
 
