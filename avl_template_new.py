@@ -69,7 +69,9 @@ class AVLNode(object):
         return self.height if self.isRealNode() else -1
 
     def getBalanceFactor(self):
-        return self.getLeft().getHeight() - self.getRight().getHeight()
+        left_son_height = 0 if self.getLeft() is None else self.getLeft().getHeight()
+        right_son_height = 0 if self.getRight() is None else self.getRight().getHeight()
+        return left_son_height - right_son_height
 
     """returns the size
 
@@ -87,7 +89,8 @@ class AVLNode(object):
 
     def setLeft(self, node):
         self.left = node
-        node.setParent(self)
+        if node is not None:
+            node.setParent(self)
 
     """sets right child and sets node's parent accordingly.
     @type node: AVLNode
@@ -96,7 +99,8 @@ class AVLNode(object):
 
     def setRight(self, node):
         self.right = node
-        node.setParent(self)
+        if node is not None:
+            node.setParent(self)
 
     """sets parent
 
@@ -157,6 +161,22 @@ class AVLNode(object):
         self.setLeft(AVLNode(None))
         self.setRight(AVLNode(None))
 
+    """calculate self's height according to it's children
+        @rtype: int
+        @returns: self's height
+     """
+    def calc_height(self):
+        left_son_height = 0 if self.getLeft() is None else self.getLeft().getHeight()
+        right_son_height = 0 if self.getRight() is None else self.getRight().getHeight()
+        return max(left_son_height, right_son_height) + 1
+    """calculate self's size according to it's children
+        @rtype: int
+        @returns: self's size
+     """
+    def calc_size(self):
+        left_son_size = 0 if self.getLeft() is None else self.getLeft().getSize()
+        right_son_size = 0 if self.getRight() is None else self.getRight().getSize()
+        return left_son_size + right_son_size + 1
 """
 A class implementing the ADT list, using an AVL tree.
 """
@@ -171,8 +191,8 @@ class AVLTreeList(object):
     def __init__(self):
         self.size = 0
         self.root = None
-        self.first = None
-        self.last = None
+        self.first_node = None
+        self.last_node = None
 
     # add your fields here
 
@@ -291,23 +311,23 @@ class AVLTreeList(object):
         node.add_virtual_children()
         if n == 0:
             self.root = node
-            self.first = node
-            self.last = node
+            self.first_node = node
+            self.last_node = node
             self.size = 1
             return 0
         if i == n:
-            self.last.setRight(node)
-            self.last.setLeft(None)  # Delete virtual left son
-            self.last = node
+            self.last_node.setRight(node)
+            self.last_node.setLeft(None)  # Delete virtual left son
+            self.last_node = node
         else:
             if i == 0:
-                self.first = node  # Updating self.first
+                self.first_node = node  # Updating self.first
             prev_node = self.retrieve_node(i)
             if prev_node.getLeft() is None:  # Case 1: prev_node has only right son
                 prev_node.setLeft(node)
             elif prev_node.isLeaf():  # Case 2: prev_node is a leaf
                 prev_node.setLeft(node)
-                self.last.setRight(None)  # Delete virtual right son
+                self.last_node.setRight(None)  # Delete virtual right son
             else:  # Case 3: prev_node has left son
                 node_predecessor = self.get_predecessor(prev_node)
                 if node_predecessor.isLeaf():
@@ -321,7 +341,7 @@ class AVLTreeList(object):
         y = inserted_node.getParent()
         while y is not None:
             y_old_height = y.getHeight()
-            y.setHeight(max(y.getLeft().getHeight(), y.getRight().getHeight()) + 1)
+            y.calc_height
             balance_factor = y.getBalanceFactor()
             if abs(balance_factor) < 2 and y.getHeight() == y_old_height:
                 break
@@ -381,15 +401,15 @@ class AVLTreeList(object):
         self.fix_nodes_height_and_size(node_b)
 
     def fix_nodes_height_and_size(self, node):
-        node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1)
-        node.setHeight(max(node.getLeft().getHeight(), node.getRight().getHeight()) + 1)
+        node.setSize(node.calc_size())
+        node.setHeight(node.calc_height())
 
     # TODO - maybe change to static method?
     def fix_nodes_size(self, inserted_node):
         y = inserted_node.getParent()
         node = inserted_node
         while y is not None:
-            y.setSize(y.getLeft().getSize() + y.getRight().getSize() + 1)
+            y.setSize(y.calc_size())
             node = y
             y = y.getParent()
         self.root = node
@@ -414,7 +434,7 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        return self.first.getValue()
+        return self.first_node.getValue()
 
     """returns the value of the last item in the list
 
@@ -423,7 +443,7 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        return self.last.getValue()
+        return self.last_node.getValue()
 
     """returns an array representing list 
 
@@ -496,7 +516,7 @@ class AVLTreeList(object):
         return ','.join(self.in_order_print(self.root, []))
 
     def in_order_print(self, node, lst):
-        if node.isRealNode() is False:
+        if node is None or node.isRealNode() is False:
             return
         self.in_order_print(node.getLeft(), lst)
         lst.append(node.getValue())
