@@ -30,7 +30,7 @@ class AVLNode(object):
     """
 
     def getLeft(self):
-        return self.left if self.left.isReal else None
+        return self.left
 
     """returns the right child
 
@@ -39,7 +39,7 @@ class AVLNode(object):
     """
 
     def getRight(self):
-        return self.right if self.right.isReal else None
+        return self.right
 
     """returns the parent 
 
@@ -48,7 +48,7 @@ class AVLNode(object):
     """
 
     def getParent(self):
-        return self.parent if self.parent.isReal else None
+        return self.parent
 
     """return the value
 
@@ -57,7 +57,7 @@ class AVLNode(object):
     """
 
     def getValue(self):
-        return self.value if self.isReal else None
+        return self.value
 
     """returns the height
 
@@ -66,7 +66,7 @@ class AVLNode(object):
     """
 
     def getHeight(self):
-        return self.height if self.isReal else -1
+        return self.height if self.isRealNode() else -1
 
     def getBalanceFactor(self):
         return self.getLeft().getHeight() - self.getRight().getHeight()
@@ -145,6 +145,10 @@ class AVLNode(object):
     def isRealNode(self):
         return self.isReal
 
+    """set children to be virtual nodes """
+    def add_virtual_children(self):
+        self.setLeft(AVLNode(None))
+        self.setRight(AVLNode(None))
 
 """
 A class implementing the ADT list, using an AVL tree.
@@ -277,6 +281,13 @@ class AVLTreeList(object):
     def insert(self, i, val):
         n = self.length()
         node = AVLNode(val)
+        if n == 0:
+            self.root = node
+            self.first = node
+            self.last = node
+            self.size = 1
+            node.add_virtual_children()
+            return 0
         if i == n:
             self.get_max().setRight(node)
             self.last = node
@@ -288,6 +299,7 @@ class AVLTreeList(object):
                 prev_node.setLeft(node)
             else:
                 self.get_predecessor(prev_node).setRight(node)
+        node.add_virtual_children()
         return self.fix_the_tree(node)
 
     def fix_the_tree(self, inserted_node):
@@ -327,10 +339,11 @@ class AVLTreeList(object):
         node_a_parent = node_a.getParent()
         node_a.setRight(node_b.getLeft())
         node_b.setLeft(node_a)
-        if node_a_parent.getRight() == node_a:
-           node_a_parent.setRight(node_b)
-        else:
-            node_a_parent.setLeft(node_b)
+        if node_a_parent is not None:
+            if node_a_parent.getRight() == node_a:
+                node_a_parent.setRight(node_b)
+            else:
+                node_a_parent.setLeft(node_b)
 
         self.fix_nodes_height_and_size(node_a)
         self.fix_nodes_height_and_size(node_b)
@@ -341,7 +354,7 @@ class AVLTreeList(object):
         node_b.setLeft(node_a.getRight())
         node_a.setRight(node_b)
         if node_b_parent.getRight() == node_b:
-           node_b_parent.setRight(node_a)
+            node_b_parent.setRight(node_a)
         else:
             node_b_parent.setLeft(node_a)
 
@@ -352,11 +365,16 @@ class AVLTreeList(object):
         node.setSize(node.getLeft().getSize() + node.getRight().getSize() + 1)
         node.setHeight(max(node.getLeft().getHeight(), node.getRight().getHeight()) + 1)
 
-#TODO - maybe change to static method?
+    # TODO - maybe change to static method?
     def fix_nodes_size(self, inserted_node):
         y = inserted_node.getParent()
+        node = inserted_node
         while y is not None:
-            y.setSize(y.getSize() + 1)
+            y.setSize(y.getLeft().getSize() + y.getRight().getSize() + 1)
+            node = y
+            y = y.getParent()
+        self.root = node
+        self.size = self.root.size
 
     """deletes the i'th item in the list
 
@@ -454,3 +472,14 @@ class AVLTreeList(object):
 
     def getRoot(self):
         return self.root
+
+    def __repr__(self):
+        return ','.join(self.in_order_print(self.root, []))
+
+    def in_order_print(self, node, lst):
+        if node.isRealNode() is False:
+            return
+        self.in_order_print(node.getLeft(), lst)
+        lst.append(node.getValue())
+        self.in_order_print(node.getRight(), lst)
+        return lst
