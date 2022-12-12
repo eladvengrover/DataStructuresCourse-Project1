@@ -160,6 +160,8 @@ class AVLTreeList(object):
     def __init__(self):
         self.size = 0
         self.root = None
+        self.first = None
+        self.last = None
 
     # add your fields here
 
@@ -277,7 +279,10 @@ class AVLTreeList(object):
         node = AVLNode(val)
         if i == n:
             self.get_max().setRight(node)
+            self.last = node
         else:
+            if i == 0:
+                self.first = node
             prev_node = self.retrieve_node(i)
             if prev_node.getLeft() is None:
                 prev_node.setLeft(node)
@@ -372,7 +377,7 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        return self.get_min().value
+        return self.first.value
 
     """returns the value of the last item in the list
 
@@ -381,7 +386,7 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        return self.get_max().value
+        return self.last.value
 
     """returns an array representing list 
 
