@@ -344,6 +344,8 @@ class AVLTreeList(object):
                 node_a_parent.setRight(node_b)
             else:
                 node_a_parent.setLeft(node_b)
+        else:
+            node_b.setParent(None)
 
         self.fix_nodes_height_and_size(node_a)
         self.fix_nodes_height_and_size(node_b)
@@ -353,10 +355,13 @@ class AVLTreeList(object):
         node_b_parent = node_b.getParent()
         node_b.setLeft(node_a.getRight())
         node_a.setRight(node_b)
-        if node_b_parent.getRight() == node_b:
-            node_b_parent.setRight(node_a)
+        if node_b_parent is not None:
+            if node_b_parent.getRight() == node_b:
+                node_b_parent.setRight(node_a)
+            else:
+                node_b_parent.setLeft(node_a)
         else:
-            node_b_parent.setLeft(node_a)
+            node_a.setParent(None)
 
         self.fix_nodes_height_and_size(node_a)
         self.fix_nodes_height_and_size(node_b)
