@@ -80,23 +80,29 @@ class AVLNode(object):
     def getSize(self):
         return self.size
 
-    """sets left child
-
+    """sets left child and sets node's parent accordingly.
+    if self is a leaf and node is real - delete right virtual node.
     @type node: AVLNode
     @param node: a node
     """
 
     def setLeft(self, node):
+        if node is not None and node.isRealNode():
+            if node.getRight().isRealNode() is False:
+                node.setRight(None)
         self.left = node
         node.setParent(self)
 
-    """sets right child
-
+    """sets right child and sets node's parent accordingly.
+    if self is a leaf and node is real - delete left virtual node.
     @type node: AVLNode
     @param node: a node
     """
 
     def setRight(self, node):
+        if node is not None and node.isRealNode():
+            if node.getLeft().isRealNode() is False:
+                node.setLeft(None)
         self.right = node
         node.setParent(self)
 
