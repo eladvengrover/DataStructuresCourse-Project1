@@ -236,11 +236,11 @@ class AVLTreeList(object):
 
     @staticmethod
     def get_predecessor(node):
-        if node.getLeft() is not None:
-            node_tree = AVLTreeList()
-            node_tree.root = node.getLeft()
-            node_tree.size = node_tree.root.size
-            return node_tree.last_node
+        if node.getLeft().isRealNode():
+            node = node.getLeft()
+            while node.getRight().isRealNode():
+                node = node.getRight()
+            return node
         parent_node = node.getParent()
         while parent_node is not None and node == parent_node.getLeft():
             node = parent_node
@@ -257,11 +257,11 @@ class AVLTreeList(object):
     """
     @staticmethod
     def get_successor(node):
-        if node.getRight() is not None:
-            node_tree = AVLTreeList()
-            node_tree.root = node.getRight()
-            node_tree.size = node_tree.root.size
-            return node_tree.first_node
+        if node.getRight().isRealNode():
+            node = node.getRight()
+            while node.getLeft().isRealNode():
+                node = node.getLeft()
+            return node
         parent_node = node.getParent()
         while parent_node is not None and node == parent_node.getRight():
             node = parent_node
