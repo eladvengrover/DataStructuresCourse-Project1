@@ -157,9 +157,7 @@ class AVLNode(object):
         self.setLeft(AVLNode(None))
         self.setRight(AVLNode(None))
 
-    def calc_new_height(self):
-        max_children_height = max(self.getLeft().getHeight(), self.getRight().getHeight())
-        return max_children_height + 1 if max_children_height != -1 else 0
+    def calc_new_height(self):        return max(self.getLeft().getHeight(), self.getRight().getHeight()) + 1
 
     def calc_size(self):
         return self.getLeft().getSize() + self.getRight().getSize() + 1
@@ -229,12 +227,12 @@ class AVLTreeList(object):
 
     """returns the predecessor of node in the list
 
-            @type node: AVLNode
-            @param node: node in the list
-            @pre: retrieve(node) != None
-            @rtype: AVLNode
-            @returns: the predecessor of node in the list
-            """
+    @type node: AVLNode
+    @param node: node in the list
+    @pre: retrieve(node) != None
+    @rtype: AVLNode
+    @returns: the predecessor of node in the list
+    """
 
     @staticmethod
     def get_predecessor(node):
@@ -251,12 +249,12 @@ class AVLTreeList(object):
 
     """returns the successor of node in the list
 
-               @type node: AVLNode
-               @param node: node in the list
-               @pre: retrieve(node) != None
-               @rtype: AVLNode
-               @returns: the successor of node in the list
-               """
+    @type node: AVLNode
+    @param node: node in the list
+    @pre: retrieve(node) != None
+    @rtype: AVLNode
+    @returns: the successor of node in the list
+    """
     @staticmethod
     def get_successor(node):
         if node.getRight() is not None:
@@ -299,14 +297,11 @@ class AVLTreeList(object):
             if i == 0:
                 self.first_node = node  # Updating self.first
             prev_node = self.retrieve_node(i)
-            if prev_node.getLeft() is None:  # Case 1: prev_node has only right son
-                prev_node.setLeft(node)
-            elif prev_node.isLeaf():  # Case 2: prev_node is a leaf
+            if prev_node.getLeft().isRealNode() is False:  # Case 1: prev_node doesn't have left son
                 prev_node.setLeft(node)
             else:  # Case 3: prev_node has left son
                 node_predecessor = self.get_predecessor(prev_node)
-                if node_predecessor.isLeaf():
-                    node_predecessor.setRight(node)
+                node_predecessor.setRight(node)
 
         return self.fix_the_tree(node, 1)
 
