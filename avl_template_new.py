@@ -361,6 +361,7 @@ class AVLTreeList(object):
                 node_a_parent.setLeft(node_b)
         else:
             node_b.setParent(None)
+            self.root = node_b
 
         self.fix_nodes_height_and_size(node_a)
         self.fix_nodes_height_and_size(node_b)
@@ -377,9 +378,10 @@ class AVLTreeList(object):
                 node_b_parent.setLeft(node_a)
         else:
             node_a.setParent(None)
+            self.root = node_a
 
-        self.fix_nodes_height_and_size(node_a)
         self.fix_nodes_height_and_size(node_b)
+        self.fix_nodes_height_and_size(node_a)
 
     def fix_nodes_height_and_size(self, node):
         node.setSize(node.calc_size())
