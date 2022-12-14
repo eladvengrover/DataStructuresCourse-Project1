@@ -544,3 +544,10 @@ class AVLTreeList(object):
         lst.append(node.getValue())
         self.in_order_print(node.getRight(), lst)
         return lst
+
+    def append(self, val):
+        self.insert(self.length(), val)
+
+
+    def getTreeHeight(self):
+        return self.root.getHeight()
