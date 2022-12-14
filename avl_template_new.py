@@ -69,8 +69,8 @@ class AVLNode(object):
         return self.height if self.isRealNode() else -1
 
     def getBalanceFactor(self):
-        left_son_height = 0 if self.getLeft() is None else self.getLeft().getHeight()
-        right_son_height = 0 if self.getRight() is None else self.getRight().getHeight()
+        left_son_height = -1 if self.getLeft() is None else self.getLeft().getHeight()
+        right_son_height = -1 if self.getRight() is None else self.getRight().getHeight()
         return left_son_height - right_son_height
 
     """returns the size
@@ -191,7 +191,7 @@ class AVLTreeList(object):
     def __init__(self):
         self.size = 0
         self.root = None
-        self.first_node = None
+        self.first_node = None  # TODO - getters & setters
         self.last_node = None
 
     # add your fields here
@@ -235,7 +235,6 @@ class AVLTreeList(object):
     """
 
     def retrieve(self, i):
-        # TODO - check if necessary to check input validity. fix comments here and on retrieve_node.
         if 0 <= i <= self.size - 1:
             return self.retrieve_node(i).value
         return None
@@ -255,44 +254,34 @@ class AVLTreeList(object):
             node_tree = AVLTreeList()
             node_tree.root = node.getLeft()
             node_tree.size = node_tree.root.size
-            return node_tree.get_max()
+            return node_tree.last_node
         parent_node = node.getParent()
         while parent_node is not None and node == parent_node.getLeft():
             node = parent_node
             parent_node = node.getParent()
         return parent_node
 
-    """returns the first item in the list
+    """returns the successor of node in the list
 
-        @rtype: AVLNode
-        @returns: the first item, None if the list is empty
-        """
+               @type node: AVLNode
+               @param node: node in the list
+               @pre: retrieve(node) != None
+               @rtype: AVLNode
+               @returns: the successor of node in the list
+               """
+    @staticmethod
+    def get_successor(node):
+        if node.getRight() is not None:
+            node_tree = AVLTreeList()
+            node_tree.root = node.getRight()
+            node_tree.size = node_tree.root.size
+            return node_tree.first_node
+        parent_node = node.getParent()
+        while parent_node is not None and node == parent_node.getRight():
+            node = parent_node
+            parent_node = node.getParent()
+        return parent_node
 
-    def get_min(self):
-        if self.root is None:
-            return None
-        node = self.root
-        left = node.left
-        while left.isRealNode():
-            node = left
-            left = node.left
-        return node
-
-    """returns the last item in the list
-
-           @rtype: AVLNode
-           @returns: the last item, None if the list is empty
-           """
-
-    def get_max(self):
-        if self.root is None:
-            return None
-        node = self.root
-        right = node.right
-        while right.isRealNode():
-            node = right
-            right = node.right
-        return node
 
     """inserts val at position i in the list
 
@@ -301,7 +290,7 @@ class AVLTreeList(object):
     @param i: The intended index in the list to which we insert val
     @type val: str
     @param val: the value we inserts
-    @rtype: list
+    @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
 
@@ -334,14 +323,24 @@ class AVLTreeList(object):
                     node_predecessor.setLeft(None)  # Delete virtual left  son
                 node_predecessor.setRight(node)
 
-        return self.fix_the_tree(node)
+        return self.fix_the_tree(node, 1)
 
-    def fix_the_tree(self, inserted_node):
+    """Rebalancing the tree after insertion/deletion
+
+    @type starting_node: AVLNode
+    @param starting_node: The node to be insert or physically deleted
+    @type insert_or_delete: int
+    @param insert_or_delete: 1 if rebalancing after insertion, 2 if rebalancing after deletion 
+    @rtype: int
+    @returns: the number of rebalancing operation due to AVL rebalancing
+    """
+
+    def fix_the_tree(self, starting_node, insert_or_delete):
         rotations_count = 0
-        y = inserted_node.getParent()
+        y = starting_node.getParent()
         while y is not None:
             y_old_height = y.getHeight()
-            y.calc_height
+            y.setHeight(y.calc_height())
             balance_factor = y.getBalanceFactor()
             if abs(balance_factor) < 2 and y.getHeight() == y_old_height:
                 break
@@ -349,8 +348,10 @@ class AVLTreeList(object):
                 y = y.getParent()
                 continue
             rotations_count += self.perform_rotation(y)
-            break
-        self.fix_nodes_size(inserted_node)
+            if insert_or_delete == 1:
+                break
+            y = y.getParent()
+        self.fix_nodes_size(starting_node)
         return rotations_count
 
     def perform_rotation(self, bf_criminal):
@@ -425,7 +426,43 @@ class AVLTreeList(object):
     """
 
     def delete(self, i):
-        return -1
+        if self.empty():
+            return -1
+        node_to_delete = self.retrieve_node(i)
+        physically_deleted_node = node_to_delete
+        if node_to_delete.isLeaf():  # Case 1: leaf
+            self.replace_node(node_to_delete, AVLNode(None), False)
+        elif node_to_delete.getRight().isReal() is False or node_to_delete.getLeft().isReal() is False:
+            # Case 2: has only 1 child
+            node_to_delete_son = node_to_delete.getRight()\
+                if node_to_delete.getRight().isReal() else node_to_delete.getLeft()
+            self.replace_node(node_to_delete, node_to_delete_son, False)
+        else:  # Case 3: has 2 children
+            node_to_delete_suc = self.get_successor(node_to_delete)
+            self.replace_node(node_to_delete_suc, node_to_delete_suc.getRight(), False)
+            self.replace_node(node_to_delete, node_to_delete_suc, True)
+            physically_deleted_node = node_to_delete_suc
+        return self.fix_the_tree(physically_deleted_node, 2)
+
+
+    """replace node_to_be_replaced with new_node
+
+        @type node_to_be_replaced: AVLNode
+        @param node_to_be_replaced: the node that will be replaced
+        @type new_node: AVLNode
+        @param new_node: the node that will replace node_to_be_replaced 
+        @type has_two_children: bool
+        @param has_two_children: True if node_to_be_replaced has 2 children, False otherwise
+        """
+    def replace_node(self, node_to_be_replaced, new_node, has_two_children):
+        if node_to_be_replaced.getParent().getRight() == node_to_be_replaced:
+            node_to_be_replaced.getParent().setRight(new_node)
+        else:
+            node_to_be_replaced.getParent().setLeft(new_node)
+        if has_two_children:
+            new_node.setRight(node_to_be_replaced.getRight())
+            new_node.setLeft(node_to_be_replaced.getLeft())
+
 
     """returns the value of the first item in the list
 
