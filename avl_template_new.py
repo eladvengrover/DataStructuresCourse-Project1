@@ -492,7 +492,14 @@ class AVLTreeList(object):
     """
 
     def listToArray(self):
-        return None
+        def list_to_array_rec(node, lst):
+            if node.isRealNode() is False:
+                return
+            list_to_array_rec(node.getLeft(), lst)
+            lst.append(node.getValue())
+            list_to_array_rec(node.getRight(), lst)
+            return lst
+        return [] if self.empty() else list_to_array_rec(self.root, [])
 
     """returns the size of the list 
 
@@ -553,19 +560,10 @@ class AVLTreeList(object):
         return self.root
 
     def __repr__(self):
-        return ','.join(self.in_order_print(self.root, []))
-
-    def in_order_print(self, node, lst):
-        if node.isRealNode() is False:
-            return
-        self.in_order_print(node.getLeft(), lst)
-        lst.append(node.getValue())
-        self.in_order_print(node.getRight(), lst)
-        return lst
+        return ','.join(self.listToArray())
 
     def append(self, val):
         return self.insert(self.length(), val)
-
 
     def getTreeHeight(self):
         return self.root.getHeight()
