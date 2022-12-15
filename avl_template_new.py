@@ -156,11 +156,13 @@ class AVLNode(object):
         return self.height == 0
 
     """set children to be virtual nodes """
+
     def add_virtual_children(self):
         self.setLeft(AVLNode(None))
         self.setRight(AVLNode(None))
 
-    def calc_new_height(self):        return max(self.getLeft().getHeight(), self.getRight().getHeight()) + 1
+    def calc_height(self):
+        return max(self.getLeft().getHeight(), self.getRight().getHeight()) + 1
 
     def calc_size(self):
         return self.getLeft().getSize() + self.getRight().getSize() + 1
@@ -236,7 +238,14 @@ class AVLTreeList(object):
     @rtype: AVLNode
     @returns: the predecessor of node in the list
     """
-
+    def get_first_node(self, node):
+        while node.getLeft().isRealNode():
+            node = node.getLeft()
+        return node
+    def get_last_node(self, node):
+        while node.getRight().isRealNode():
+            node = node.getRight()
+        return node
     @staticmethod
     def get_predecessor(node):
         if node.getLeft().isRealNode():
@@ -258,6 +267,7 @@ class AVLTreeList(object):
     @rtype: AVLNode
     @returns: the successor of node in the list
     """
+
     @staticmethod
     def get_successor(node):
         if node.getRight().isRealNode():
@@ -270,7 +280,6 @@ class AVLTreeList(object):
             node = parent_node
             parent_node = node.getParent()
         return parent_node
-
 
     """inserts val at position i in the list
 
@@ -323,7 +332,7 @@ class AVLTreeList(object):
         y = starting_node.getParent()
         while y is not None:
             y_old_height = y.getHeight()
-            y.setHeight(y.calc_new_height())
+            y.setHeight(y.calc_height())
             balance_factor = y.getBalanceFactor()
             if abs(balance_factor) < 2 and y.getHeight() == y_old_height:
                 break
@@ -351,7 +360,6 @@ class AVLTreeList(object):
             return 2
         self.left_rotation(bf_criminal)
         return 1
-
 
     def left_rotation(self, node_a):
         node_b = node_a.getRight()
@@ -389,7 +397,7 @@ class AVLTreeList(object):
 
     def fix_node_height_and_size(self, node):
         node.setSize(node.calc_size())
-        node.setHeight(node.calc_new_height())
+        node.setHeight(node.calc_height())
 
     # TODO - maybe change to static method?
     def fix_nodes_size(self, starting_node, insert_or_delete):
@@ -433,7 +441,7 @@ class AVLTreeList(object):
             self.replace_node(node_to_delete, AVLNode(None), False)
         elif node_to_delete.getRight().isRealNode() is False or node_to_delete.getLeft().isRealNode() is False:
             # Case 2: has only 1 child
-            node_to_delete_son = node_to_delete.getRight()\
+            node_to_delete_son = node_to_delete.getRight() \
                 if node_to_delete.getRight().isRealNode() else node_to_delete.getLeft()
             self.replace_node(node_to_delete, node_to_delete_son, False)
         else:  # Case 3: has 2 children
@@ -444,7 +452,6 @@ class AVLTreeList(object):
             physically_deleted_node = node_to_delete_suc_parent.getLeft()
         return self.fix_the_tree(physically_deleted_node, DELETE)
 
-
     """replace node_to_be_replaced with new_node
 
         @type node_to_be_replaced: AVLNode
@@ -454,6 +461,7 @@ class AVLTreeList(object):
         @type has_two_children: bool
         @param has_two_children: True if node_to_be_replaced has 2 children, False otherwise
         """
+
     def replace_node(self, node_to_be_replaced, new_node, has_two_children):
         if node_to_be_replaced == self.root:
             self.root = new_node
@@ -465,7 +473,6 @@ class AVLTreeList(object):
         if has_two_children:
             new_node.setRight(node_to_be_replaced.getRight())
             new_node.setLeft(node_to_be_replaced.getLeft())
-
 
     """returns the value of the first item in the list
 
@@ -499,6 +506,7 @@ class AVLTreeList(object):
             lst.append(node.getValue())
             list_to_array_rec(node.getRight(), lst)
             return lst
+
         return [] if self.empty() else list_to_array_rec(self.root, [])
 
     """returns the size of the list 
@@ -510,6 +518,77 @@ class AVLTreeList(object):
     def length(self):
         return self.size
 
+    """
+    @type A: list
+    @pre: A is a sorted list
+    @param A: the first list 
+    @type B: list
+    @pre: B is a sorted list
+    @param B: the second list 
+    @rtype: List
+    @returns: sorted list contained A & B elements
+    """
+
+    @staticmethod
+    def merge(A, B):
+        n = len(A)
+        m = len(B)
+        C = [None for i in range(n + m)]
+        a = b = c = 0
+        while a < n and b < m:
+            if A[a] < B[b]:
+                C[c] = A[a]
+                a += 1
+            else:
+                C[c] = B[b]
+                b += 1
+            c += 1
+        if a == n:
+            while b < m:
+                C[c] = B[b]
+                b += 1
+                c += 1
+        else:
+            while a < n:
+                C[c] = A[a]
+                a += 1
+                c += 1
+        return C
+
+    """
+    @type lst: list
+    @param lst: the list to be sorted
+    @rtype: List
+    @returns: sorted list contained lst elements
+    """
+
+    @staticmethod
+    def mergesort(lst):
+        n = len(lst)
+        if n <= 1:
+            return lst
+        else:
+            lst1 = AVLTreeList.mergesort(lst[:n // 2])
+            lst2 = AVLTreeList.mergesort(lst[n // 2:])
+        return AVLTreeList.merge(lst1, lst2)
+    """
+    type lst: List
+    """
+    @staticmethod
+    def create_tree_from_list(lst):
+        if len(lst) == 1:
+            new_node = AVLNode(lst[0])
+            new_node.add_virtual_children()
+            return new_node
+        if len(lst) == 0:
+            return AVLNode(None)
+        median = AVLNode(lst[len(lst) // 2])
+        median.setLeft(AVLTreeList.create_tree_from_list(lst[:len(lst) // 2]))
+        median.setRight(AVLTreeList.create_tree_from_list(lst[len(lst) // 2 + 1:]))
+        median.setHeight(median.calc_height())
+        median.setSize(median.calc_size())
+        return median
+
     """sort the info values of the list
 
     @rtype: list
@@ -517,7 +596,16 @@ class AVLTreeList(object):
     """
 
     def sort(self):
-        return None
+        tree_to_lst = self.listToArray()
+        sorted_tree_to_lst = AVLTreeList.mergesort(tree_to_lst)
+        sorted_nodes = AVLTreeList.create_tree_from_list(sorted_tree_to_lst)
+        sorted_tree = AVLTreeList()
+        sorted_tree.root = sorted_nodes
+        sorted_tree.size = sorted_nodes.getSize()
+        sorted_tree.first_node = sorted_tree.get_first_node(sorted_nodes)
+        sorted_tree.last_node = sorted_tree.get_last_node(sorted_nodes)
+        return sorted_tree
+
 
     """permute the info values of the list 
 
@@ -553,7 +641,6 @@ class AVLTreeList(object):
             if tree_as_lst[i] == val:
                 return i
         return -1
-
 
     """returns the root of the tree representing the list
 
