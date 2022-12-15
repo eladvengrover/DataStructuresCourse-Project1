@@ -548,7 +548,12 @@ class AVLTreeList(object):
     """
 
     def search(self, val):
-        return None
+        tree_as_lst = self.listToArray()
+        for i in range(len(tree_as_lst)):
+            if tree_as_lst[i] == val:
+                return i
+        return -1
+
 
     """returns the root of the tree representing the list
 
