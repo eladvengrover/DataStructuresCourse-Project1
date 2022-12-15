@@ -188,7 +188,7 @@ class testAVLList(unittest.TestCase):
                 self.check_last(T5, L5)
 
     ### TESTING DELETION ### (assuming insertion works perfectly)#
-    def test_deleting_not_existing(self):
+    def test_deleting_not_existing(self):  # TODO - check
         self.assertEqual(self.emptyList.delete(0), -1)
         self.assertEqual(self.twentyTree.delete(-1), -1)
         self.assertEqual(self.twentyTree.delete(30), -1)
@@ -1397,7 +1397,7 @@ class testAVLList(unittest.TestCase):
                     self.assertEqual(-1, T1.search(-20))
                     self.assertEqual(-1, T2.search(-20))
 
-    def test_num_of_balnce_ops(self):
+    def test_num_of_balnce_ops(self):  # TODO - check
         T = AVLTreeList()
         self.assertEqual(T.append(3), 0)
         self.assertEqual(T.insert(0, 1), 1)

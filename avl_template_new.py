@@ -417,6 +417,12 @@ class AVLTreeList(object):
     def delete(self, i):
         if self.empty():
             return -1
+        if self.length() == 1:
+            self.root = None
+            self.size = 0
+            self.last_node = None
+            self.first_node = None
+            return 0
         node_to_delete = self.retrieve_node(i)
         physically_deleted_node = node_to_delete
         if i == 0:
@@ -468,7 +474,7 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        return self.first_node.getValue()
+        return None if self.empty() else self.first_node.getValue()
 
     """returns the value of the last item in the list
 
@@ -477,7 +483,7 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        return self.last_node.getValue()
+        return None if self.empty() else self.last_node.getValue()
 
     """returns an array representing list 
 
@@ -558,7 +564,7 @@ class AVLTreeList(object):
         return lst
 
     def append(self, val):
-        self.insert(self.length(), val)
+        return self.insert(self.length(), val)
 
 
     def getTreeHeight(self):
