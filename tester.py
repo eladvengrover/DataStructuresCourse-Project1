@@ -11,7 +11,21 @@ lst.insert(6, "c")
 lst.insert(7, "b")
 lst.insert(8, "a")
 x = lst.sort()
+x_lst = x.listToArray()
 print(x)
+for i in range(10000):
+    y = x.permutation()
+    y_lst = y.listToArray()
+    for k in y_lst:
+        if k not in x_lst:
+            print("ERROR!!!")
+
+
+
+
+
+
+
 # lst.delete(0)
 # lst.delete(0)
 # lst.delete(1)

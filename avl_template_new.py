@@ -6,6 +6,7 @@
 
 
 """A class represnting a node in an AVL tree"""
+import random
 
 INSERT = 1
 DELETE = 2
@@ -621,7 +622,17 @@ class AVLTreeList(object):
     """
 
     def permutation(self):
-        return None
+        lst_tree = self.listToArray()
+        for i in range(len(lst_tree) - 1, 0, -1):
+            random_element_index = random.randint(0, i)
+            lst_tree[i], lst_tree[random_element_index] = lst_tree[random_element_index], lst_tree[i]
+        shuffled_tree_root = AVLTreeList.create_tree_from_list(lst_tree, 0, len(lst_tree))
+        shuffled_tree = AVLTreeList()
+        first_node = shuffled_tree_root.get_first_node()
+        last_node = shuffled_tree_root.get_last_node()
+        shuffled_tree.update_tree_fields(shuffled_tree_root, first_node, last_node)
+        return shuffled_tree
+
 
     """concatenates lst to self
 
