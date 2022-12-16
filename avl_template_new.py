@@ -583,16 +583,17 @@ class AVLTreeList(object):
     which linked to all other lst elements represented as AVLNodes 
     """
     @staticmethod
-    def create_tree_from_list(lst):
-        if len(lst) == 1:
-            new_node = AVLNode(lst[0])
+    def create_tree_from_list(lst, begin_index, end_index):
+        if end_index - begin_index == 1:
+            new_node = AVLNode(lst[begin_index])
             new_node.add_virtual_children()
             return new_node
-        if len(lst) == 0:
+        if end_index == begin_index:
             return AVLNode(None)
-        median_node = AVLNode(lst[len(lst) // 2])
-        median_node.setLeft(AVLTreeList.create_tree_from_list(lst[:len(lst) // 2]))
-        median_node.setRight(AVLTreeList.create_tree_from_list(lst[len(lst) // 2 + 1:]))
+        median_index = begin_index + ((end_index - begin_index) // 2)
+        median_node = AVLNode(lst[median_index])
+        median_node.setLeft(AVLTreeList.create_tree_from_list(lst, begin_index, median_index))
+        median_node.setRight(AVLTreeList.create_tree_from_list(lst, median_index + 1, end_index))
         median_node.fix_node_height_and_size()
         return median_node
 
@@ -605,7 +606,7 @@ class AVLTreeList(object):
     def sort(self):
         lst_tree = self.listToArray()
         sorted_lst_tree = AVLTreeList.mergesort(lst_tree)
-        sorted_tree_root = AVLTreeList.create_tree_from_list(sorted_lst_tree)
+        sorted_tree_root = AVLTreeList.create_tree_from_list(sorted_lst_tree, 0, len(sorted_lst_tree))
         sorted_tree = AVLTreeList()
         first_node = sorted_tree_root.get_first_node()
         last_node = sorted_tree_root.get_last_node()
