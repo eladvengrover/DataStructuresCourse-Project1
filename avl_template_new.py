@@ -369,7 +369,8 @@ class AVLTreeList(object):
             y.setHeight(y.calc_height())
             balance_factor = y.getBalanceFactor()
             if abs(balance_factor) < 2 and y.getHeight() == y_old_height:
-                break
+                y = y.getParent()
+                continue
             elif abs(balance_factor) < 2 and y.getHeight() != y_old_height:
                 y = y.getParent()
                 continue
