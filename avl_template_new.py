@@ -8,10 +8,6 @@
 """A class represnting a node in an AVL tree"""
 import random
 
-INSERT = 1
-DELETE = 2
-
-
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -229,6 +225,12 @@ class AVLNode(object):
             node = node.getRight()
         return node
 
+    def update_node_fields(self, right_son, left_son, parent):
+        self.setRight(right_son)
+        self.setLeft(left_son)
+        self.setParent(parent)
+        self.fix_node_height_and_size()
+
 """
 A class implementing the ADT list, using an AVL tree.
 """
@@ -326,7 +328,7 @@ class AVLTreeList(object):
                 node_predecessor = prev_node.get_predecessor()
                 node_predecessor.setRight(node)
 
-        return self.fix_the_tree(node, INSERT)
+        return self.fix_the_tree(node, False)
 
     """Rebalancing the tree after insertion/deletion
 
@@ -338,7 +340,7 @@ class AVLTreeList(object):
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
 
-    def fix_the_tree(self, starting_node, insert_or_delete):
+    def fix_the_tree(self, starting_node, fix_to_the_root):
         rotations_count = 0
         y = starting_node.getParent()
         while y is not None:
@@ -351,10 +353,10 @@ class AVLTreeList(object):
                 y = y.getParent()
                 continue
             rotations_count += self.perform_rotation(y)
-            if insert_or_delete == 1:
+            if fix_to_the_root is False:
                 break
             y = y.getParent()
-        self.fix_nodes_size(starting_node, insert_or_delete)
+        self.fix_nodes_size(starting_node, fix_to_the_root)
         return rotations_count
 
     def perform_rotation(self, bf_criminal):
@@ -407,7 +409,7 @@ class AVLTreeList(object):
         node_a.fix_node_height_and_size()
 
     # TODO - maybe change to static method?
-    def fix_nodes_size(self, starting_node, insert_or_delete):
+    def fix_nodes_size(self, starting_node, fix_to_the_root):
         y = starting_node.getParent()
         node = starting_node
         if node.isRealNode():
@@ -416,7 +418,7 @@ class AVLTreeList(object):
             y.fix_node_height_and_size()
             node = y
             y = y.getParent()
-        if insert_or_delete == INSERT:
+        if fix_to_the_root is False:
             self.root = node
         self.size = self.root.size
 
@@ -454,7 +456,7 @@ class AVLTreeList(object):
             self.replace_node(node_to_delete_suc, node_to_delete_suc.getRight(), False)
             self.replace_node(node_to_delete, node_to_delete_suc, True)
             physically_deleted_node = node_to_delete_suc_parent.getLeft()
-        return self.fix_the_tree(physically_deleted_node, DELETE)
+        return self.fix_the_tree(physically_deleted_node, True)
 
     """replace node_to_be_replaced with new_node
 
@@ -633,6 +635,29 @@ class AVLTreeList(object):
         shuffled_tree.update_tree_fields(shuffled_tree_root, first_node, last_node)
         return shuffled_tree
 
+    def concat_helper(self, higher_tree, lower_tree, lower_tree_height, self_is_bigger, mid_node):
+        node = higher_tree.getRoot()
+        while node.getHeight() > lower_tree_height:
+            node = node.getRight() if self_is_bigger else node.getLeft()
+        node_parent = node.getParent()
+        if self_is_bigger:
+            node_parent.setRight(mid_node)
+            mid_node.setRight(lower_tree.getRoot())
+            mid_node.setLeft(node)
+            higher_tree.set_last_node(lower_tree.last_node)
+        else:
+            node_parent.setLeft(mid_node)
+            mid_node.setLeft(lower_tree.getRoot())
+            mid_node.setRight(node)
+            lower_tree.update_tree_fields(higher_tree.getRoot(), lower_tree.first_node, higher_tree.last_node)
+        return node
+
+    def concat_empty_trees(self, lst):
+        if self.empty() and lst.empty():
+            return 0
+        if self.empty():
+            self.update_tree_fields(lst.getRoot(), lst.first_node,  lst.last_node)
+        return self.getRoot().getHeight() + 1
 
     """concatenates lst to self
 
@@ -643,7 +668,35 @@ class AVLTreeList(object):
     """
 
     def concat(self, lst):
-        return None
+        self_last = self.last_node
+        if self.empty() or lst.empty():
+            return self.concat_empty_trees(lst)
+        return_val = abs(lst.getRoot().getHeight() - self.getRoot().getHeight())
+        if lst.size == 1:
+            self.last_node.setRight(lst.getRoot())
+            self.set_last_node(lst.getRoot())
+            self.fix_the_tree(self.last_node, False)
+            return return_val
+        if self.size == 1:  # lst.length() > 1
+            lst_first = lst.first_node
+            lst.delete(0)
+            node = self.concat_helper(lst, self, 0, False, lst_first)
+            self.fix_the_tree(node, True)
+            return return_val
+        self.delete(self.length() - 1)
+        lst_height = lst.getRoot().getHeight()
+        self_height = -1 if self.empty() else self.getRoot().getHeight()
+        if abs(self_height - lst_height) < 2:
+            self_last.update_node_fields(lst.getRoot(), self.getRoot(), None)
+            self.update_tree_fields(self_last, self.first_node, lst.last_node)
+            return return_val
+        elif self_height > lst_height:
+            node = self.concat_helper(self, lst, lst_height, True, self_last)
+        else:
+            node = self.concat_helper(lst, self, self_height, False, self_last)
+        self.fix_the_tree(node, True)
+        return return_val
+
 
     """searches for a *value* in the list
 
