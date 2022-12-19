@@ -8,6 +8,7 @@
 """A class represnting a node in an AVL tree"""
 import random
 
+
 class AVLNode(object):
     """Constructor, you are allowed to add more fields.
 
@@ -148,22 +149,23 @@ class AVLNode(object):
         @rtype: bool
         @returns: True if self is a leaf, False otherwise.
         """
-
     def isLeaf(self):
         return self.height == 0
 
     """set children to be virtual nodes """
-
     def add_virtual_children(self):
         self.setLeft(AVLNode(None))
         self.setRight(AVLNode(None))
 
+    """calculates self's height according to its children"""
     def calc_height(self):
         return max(self.getLeft().getHeight(), self.getRight().getHeight()) + 1
 
+    """calculates self's size according to its children"""
     def calc_size(self):
         return self.getLeft().getSize() + self.getRight().getSize() + 1
 
+    """sets height and size of self according to its children"""
     def fix_node_height_and_size(self):
         self.setSize(self.calc_size())
         self.setHeight(self.calc_height())
@@ -225,11 +227,21 @@ class AVLNode(object):
             node = node.getRight()
         return node
 
-    def update_node_fields(self, right_son, left_son, parent):
-        self.setRight(right_son)
-        self.setLeft(left_son)
+    """update self fields and fixes its height and size accordingly
+
+     @type: AVLNode
+     @param: a node represents the new right child of self
+     @type: AVLNode
+     @param: a node represents the new left child of self
+     @type: AVLNode
+     @param: a node represents the new parent of self
+     """
+    def update_node_fields(self, right_child, left_child, parent):
+        self.setRight(right_child)
+        self.setLeft(left_child)
         self.setParent(parent)
         self.fix_node_height_and_size()
+
 
 """
 A class implementing the ADT list, using an AVL tree.
@@ -245,9 +257,18 @@ class AVLTreeList(object):
     def __init__(self):
         self.size = 0
         self.root = None
-        self.first_node = None  # TODO - getters & setters
+        self.first_node = None
         self.last_node = None
 
+    """update self fields
+
+    @type: AVLNode
+    @param: a node represents the new root of self
+    @type: AVLNode
+    @param: a node represents the new first_node of self
+    @type: AVLNode
+    @param: a node represents the new last_node of self
+    """
     def update_tree_fields(self, root, first_node, last_node):
         self.set_root(root)
         self.set_size(0 if root is None else root.getSize())
@@ -359,6 +380,11 @@ class AVLTreeList(object):
         self.fix_nodes_size(starting_node, fix_to_the_root)
         return rotations_count
 
+    """performs rotation on bf_criminal according to its and its child's BF 
+
+    @type bf_criminal: AVLNode
+    @param bf_criminal: the node to be rotate
+    """
     def perform_rotation(self, bf_criminal):
         if bf_criminal.getBalanceFactor() == 2:
             if bf_criminal.getLeft().getBalanceFactor() == -1:
@@ -374,6 +400,11 @@ class AVLTreeList(object):
         self.left_rotation(bf_criminal)
         return 1
 
+    """performs left rotation on node_b and its right child and fixes its size and height 
+
+    @type node_a: AVLNode
+    @param node_a: the node to be rotate with his child
+    """
     def left_rotation(self, node_a):
         node_b = node_a.getRight()
         node_a_parent = node_a.getParent()
@@ -391,6 +422,11 @@ class AVLTreeList(object):
         node_a.fix_node_height_and_size()
         node_b.fix_node_height_and_size()
 
+    """performs right rotation on node_b and its left child and fixes its size and height 
+
+    @type node_b: AVLNode
+    @param node_b: the node to be rotate with his child
+    """
     def right_rotation(self, node_b):
         node_a = node_b.getLeft()
         node_b_parent = node_b.getParent()
@@ -408,7 +444,6 @@ class AVLTreeList(object):
         node_b.fix_node_height_and_size()
         node_a.fix_node_height_and_size()
 
-    # TODO - maybe change to static method?
     def fix_nodes_size(self, starting_node, fix_to_the_root):
         y = starting_node.getParent()
         node = starting_node
@@ -430,7 +465,6 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
-
     def delete(self, i):
         if self.empty():
             return -1
