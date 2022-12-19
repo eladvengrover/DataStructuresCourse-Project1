@@ -635,6 +635,23 @@ class AVLTreeList(object):
         shuffled_tree.update_tree_fields(shuffled_tree_root, first_node, last_node)
         return shuffled_tree
 
+    """concatenates lower_tree to higher_tree if self_is_bigger is True.
+    otherwise, concatenates higher_tree to lower_tree 
+    
+    @type higher_tree: AVLTreeList
+    @param higher_tree: a list 
+    @type lower_tree: AVLTreeList
+    @param lower_tree: a list
+    @type lower_tree_height: int
+    @param lower_tree_height: lower_tree root's height
+    @type self_is_bigger: bool
+    @param self_is_bigger: True if higher_tree is self, False otherwise
+    @type mid_node: AVLNode
+    @param mid_node: a node that going to be in the middle of the concatenated list
+
+    @rtype: AVLNode
+    @returns: the first node in the concatenated list that is BF criminal suspect
+    """
     def concat_helper(self, higher_tree, lower_tree, lower_tree_height, self_is_bigger, mid_node):
         node = higher_tree.getRoot()
         while node.getHeight() > lower_tree_height:
@@ -652,12 +669,35 @@ class AVLTreeList(object):
             lower_tree.update_tree_fields(higher_tree.getRoot(), lower_tree.first_node, higher_tree.last_node)
         return node
 
+    """concatenates lst to self when one/two of them is empty
+
+    @type lst: AVLTreeList
+    @param lst: a list to be concatenated after self
+    @rtype: int
+    @returns: the absolute value of the difference between the height of the AVL trees joined
+    """
     def concat_empty_trees(self, lst):
         if self.empty() and lst.empty():
             return 0
         if self.empty():
             self.update_tree_fields(lst.getRoot(), lst.first_node,  lst.last_node)
         return self.getRoot().getHeight() + 1
+
+    """concatenates lst to self when one/two of them has one element
+
+    @type lst: AVLTreeList
+    @param lst: a list to be concatenated after self
+    """
+    def concat_trees_with_one_element(self, lst):
+        if lst.size == 1:
+            self.last_node.setRight(lst.getRoot())
+            self.set_last_node(lst.getRoot())
+            self.fix_the_tree(self.last_node, False)
+        elif self.size == 1:  # lst.length() > 1
+            lst_first = lst.first_node
+            lst.delete(0)
+            node = self.concat_helper(lst, self, 0, False, lst_first)
+            self.fix_the_tree(node, True)
 
     """concatenates lst to self
 
@@ -666,33 +706,25 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the absolute value of the difference between the height of the AVL trees joined
     """
-
     def concat(self, lst):
         self_last = self.last_node
-        if self.empty() or lst.empty():
+        if self.empty() or lst.empty():  # Case 1: one of the lists is empty
             return self.concat_empty_trees(lst)
         return_val = abs(lst.getRoot().getHeight() - self.getRoot().getHeight())
-        if lst.size == 1:
-            self.last_node.setRight(lst.getRoot())
-            self.set_last_node(lst.getRoot())
-            self.fix_the_tree(self.last_node, False)
+        if lst.size == 1 or self.size == 1:  # Case 2: one of the lists has only one element
+            self.concat_trees_with_one_element(lst)
             return return_val
-        if self.size == 1:  # lst.length() > 1
-            lst_first = lst.first_node
-            lst.delete(0)
-            node = self.concat_helper(lst, self, 0, False, lst_first)
-            self.fix_the_tree(node, True)
-            return return_val
+        #  Case 3: both lists has more than one element
         self.delete(self.length() - 1)
         lst_height = lst.getRoot().getHeight()
-        self_height = -1 if self.empty() else self.getRoot().getHeight()
-        if abs(self_height - lst_height) < 2:
+        self_height = self.getRoot().getHeight()
+        if abs(self_height - lst_height) < 2:  # Case 3.1: |height difference| <= 1
             self_last.update_node_fields(lst.getRoot(), self.getRoot(), None)
             self.update_tree_fields(self_last, self.first_node, lst.last_node)
             return return_val
-        elif self_height > lst_height:
+        elif self_height > lst_height:  # Case 3.2: self is higher than lst
             node = self.concat_helper(self, lst, lst_height, True, self_last)
-        else:
+        else:  # Case 3.3: lst is higher than self
             node = self.concat_helper(lst, self, self_height, False, self_last)
         self.fix_the_tree(node, True)
         return return_val
