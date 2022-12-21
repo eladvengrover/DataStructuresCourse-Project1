@@ -283,7 +283,7 @@ class AVLTreeList(object):
 
     """update self fields
 
-    @type: AVLNode
+    @type: AVLNode 
     @param: a node represents the new root of self
     @type: AVLNode
     @param: a node represents the new first_node of self
@@ -303,7 +303,7 @@ class AVLTreeList(object):
     """
 
     def empty(self):
-        return self.size == 0
+        return self.getSize() == 0
 
     """"retrieves the i'th item in the list
 
@@ -323,7 +323,7 @@ class AVLTreeList(object):
                 return retrieve_rec(node.left, k)
             return retrieve_rec(node.right, k - r)
 
-        return retrieve_rec(self.root, i + 1)
+        return retrieve_rec(self.getRoot(), i + 1)
 
     """retrieves the value of the i'th item in the list
 
@@ -336,7 +336,7 @@ class AVLTreeList(object):
 
     def retrieve(self, i):
         if 0 <= i <= self.size - 1:
-            return self.retrieve_node(i).value
+            return self.retrieve_node(i).getValue()
         return None
 
     """inserts val at position i in the list
@@ -358,11 +358,11 @@ class AVLTreeList(object):
             self.update_tree_fields(node, node, node)
             return 0
         if i == n:
-            self.last_node.setRight(node)
-            self.last_node = node
+            self.get_last_node().setRight(node)
+            self.set_last_node(node)
         else:
             if i == 0:
-                self.first_node = node  # Updating self.first
+                self.set_first_node(node)  # Updating self.first
             prev_node = self.retrieve_node(i)
             if prev_node.getLeft().isRealNode() is False:  # Case 1: prev_node doesn't have left son
                 prev_node.setLeft(node)
@@ -439,7 +439,7 @@ class AVLTreeList(object):
                 node_a_parent.setLeft(node_b)
         else:
             node_b.setParent(None)
-            self.root = node_b
+            self.set_root(node_b)
 
         node_a.fix_node_height_and_size()
         node_b.fix_node_height_and_size()
@@ -461,7 +461,7 @@ class AVLTreeList(object):
                 node_b_parent.setLeft(node_a)
         else:
             node_a.setParent(None)
-            self.root = node_a
+            self.set_root(node_a)
 
         node_b.fix_node_height_and_size()
         node_a.fix_node_height_and_size()
@@ -476,8 +476,8 @@ class AVLTreeList(object):
             node = y
             y = y.getParent()
         if fix_to_the_root is False:
-            self.root = node
-        self.size = self.root.size
+            self.set_root(node)
+        self.set_size(self.getRoot().getSize())
 
     """deletes the i'th item in the list
 
@@ -496,9 +496,9 @@ class AVLTreeList(object):
         node_to_delete = self.retrieve_node(i)
         physically_deleted_node = node_to_delete
         if i == 0:
-            self.first_node = node_to_delete.get_successor()
+            self.set_first_node(node_to_delete.get_successor())
         if i == self.length() - 1:
-            self.last_node = node_to_delete.get_predecessor()
+            self.set_last_node(node_to_delete.get_predecessor())
         if node_to_delete.isLeaf():  # Case 1: leaf
             self.replace_node(node_to_delete, AVLNode(None), False)
         elif node_to_delete.getRight().isRealNode() is False or node_to_delete.getLeft().isRealNode() is False:
@@ -526,7 +526,7 @@ class AVLTreeList(object):
 
     def replace_node(self, node_to_be_replaced, new_node, has_two_children):
         if node_to_be_replaced == self.root:
-            self.root = new_node
+            self.set_root(new_node)
             new_node.setParent(None)
         elif node_to_be_replaced.getParent().getRight() == node_to_be_replaced:
             node_to_be_replaced.getParent().setRight(new_node)
@@ -543,7 +543,7 @@ class AVLTreeList(object):
     """
 
     def first(self):
-        return None if self.empty() else self.first_node.getValue()
+        return None if self.empty() else self.get_first_node().getValue()
 
     """returns the value of the last item in the list
 
@@ -552,7 +552,7 @@ class AVLTreeList(object):
     """
 
     def last(self):
-        return None if self.empty() else self.last_node.getValue()
+        return None if self.empty() else self.get_last_node().getValue()
 
     """returns an array representing list 
 
@@ -578,7 +578,7 @@ class AVLTreeList(object):
     """
 
     def length(self):
-        return self.size
+        return self.getSize()
 
     """
     @type A: list
@@ -746,11 +746,11 @@ class AVLTreeList(object):
     """
     def concat_trees_with_one_element(self, lst):
         if lst.size == 1:
-            self.last_node.setRight(lst.getRoot())
+            self.get_last_node().setRight(lst.getRoot())
             self.set_last_node(lst.getRoot())
             self.fix_the_tree(self.last_node, False)
-        elif self.size == 1:  # lst.length() > 1
-            lst_first = lst.first_node
+        elif self.getSize() == 1:  # lst.length() > 1
+            lst_first = lst.get_first_node()
             lst.delete(0)
             node = self.concat_helper(lst, self, 0, False, lst_first)
             self.fix_the_tree(node, True)
@@ -763,11 +763,11 @@ class AVLTreeList(object):
     @returns: the absolute value of the difference between the height of the AVL trees joined
     """
     def concat(self, lst):
-        self_last = self.last_node
+        self_last = self.get_last_node()
         if self.empty() or lst.empty():  # Case 1: one of the lists is empty
             return self.concat_empty_trees(lst)
         return_val = abs(lst.getRoot().getHeight() - self.getRoot().getHeight())
-        if lst.size == 1 or self.size == 1:  # Case 2: one of the lists has only one element
+        if lst.getSize() == 1 or self.getSize() == 1:  # Case 2: one of the lists has only one element
             self.concat_trees_with_one_element(lst)
             return return_val
         #  Case 3: both lists has more than one element
@@ -812,33 +812,57 @@ class AVLTreeList(object):
 
     """set root to be the new root of self
 
-        @type root: AVLNode
-        @param root: new root to be set
-        """
+    @type root: AVLNode
+    @param root: new root to be set
+    """
     def set_root(self, root):
         self.root = root
 
+    """returns the size of the tree representing the list
+
+    @rtype: int
+    @returns: the size of the tree
+    """
+    def getSize(self):
+        return self.size
+
     """set size to be the new size of self
 
-        @type size: int
-        @param size: new size of self
-        """
+    @type size: int
+    @param size: new size of self
+    """
     def set_size(self, size):
         self.size = size
 
+    """returns the first node of the tree representing the list
+
+    @rtype: AVLNode
+    @returns: the first node of the tree
+    """
+    def get_first_node(self):
+        return self.first_node
+
     """set first_node to be the new first_node of self
 
-        @type first_node: AVLNode
-        @param first_node: new first_node of self
-        """
+    @type first_node: AVLNode
+    @param first_node: new first_node of self
+    """
     def set_first_node(self, first_node):
         self.first_node = first_node
 
+    """returns the last node of the tree representing the list
+
+    @rtype: AVLNode
+    @returns: the last node of the tree
+    """
+    def get_last_node(self):
+        return self.last_node
+
     """set last_node to be the new last_node of self
 
-        @type last_node: AVLNode
-        @param last_node: new last_node of self
-        """
+    @type last_node: AVLNode
+    @param last_node: new last_node of self
+    """
     def set_last_node(self, last_node):
         self.last_node = last_node
 
