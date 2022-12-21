@@ -5,7 +5,7 @@
 # name2    - Elad Vengrover
 
 
-"""A class represnting a node in an AVL tree"""
+"""A class representing a node in an AVL tree"""
 import random
 
 
@@ -26,6 +26,7 @@ class AVLNode(object):
         self.size = 1 if self.isReal else 0
 
     """returns the left child
+    
     @rtype: AVLNode
     @returns: the left child of self, None if there is no left child
     """
@@ -69,6 +70,12 @@ class AVLNode(object):
     def getHeight(self):
         return self.height if self.isRealNode() else -1
 
+    """returns the balance factor
+    
+    @pre: self.isRealNode() is True   
+    @rtype: int
+    @returns: the balance factor of self
+    """
     def getBalanceFactor(self):
         return self.getLeft().getHeight() - self.getRight().getHeight()
 
@@ -82,6 +89,7 @@ class AVLNode(object):
         return self.size
 
     """sets left child and sets node's parent accordingly.
+    
     @type node: AVLNode
     @param node: a node
     """
@@ -91,6 +99,7 @@ class AVLNode(object):
         node.setParent(self)
 
     """sets right child and sets node's parent accordingly.
+    
     @type node: AVLNode
     @param node: a node
     """
@@ -117,7 +126,7 @@ class AVLNode(object):
     def setValue(self, value):
         self.value = value
 
-    """sets the balance factor of the node
+    """sets the height  of the node
 
     @type h: int
     @param h: the height
@@ -150,22 +159,34 @@ class AVLNode(object):
         @returns: True if self is a leaf, False otherwise.
         """
     def isLeaf(self):
-        return self.height == 0
+        return self.getheight() == 0
 
     """set children to be virtual nodes """
     def add_virtual_children(self):
         self.setLeft(AVLNode(None))
         self.setRight(AVLNode(None))
 
-    """calculates self's height according to its children"""
+    """calculates self's height according to its children
+    @pre: self.isRealNode() is True
+    @rtype: int
+    @returns: the height of self
+    """
     def calc_height(self):
         return max(self.getLeft().getHeight(), self.getRight().getHeight()) + 1
 
-    """calculates self's size according to its children"""
+    """calculates self's size according to its children
+    
+    @pre: self.isRealNode() is True
+    @rtype: int
+    @returns: the size of self
+    """
     def calc_size(self):
         return self.getLeft().getSize() + self.getRight().getSize() + 1
 
-    """sets height and size of self according to its children"""
+    """sets height and size of self according to its children
+    
+    @pre: self.isRealNode() is True
+    """
     def fix_node_height_and_size(self):
         self.setSize(self.calc_size())
         self.setHeight(self.calc_height())
@@ -182,7 +203,7 @@ class AVLNode(object):
             return self.getLeft().get_last_node()
         node = self
         parent_node = node.getParent()
-        while parent_node is not None and node == parent_node.getLeft():
+        while parent_node is not None and node == parent_node.getLeft():  # node is Parent_node left child
             node = parent_node
             parent_node = node.getParent()
         return parent_node
@@ -200,7 +221,7 @@ class AVLNode(object):
             return self.getRight().get_first_node()
         node = self
         parent_node = node.getParent()
-        while parent_node is not None and node == parent_node.getRight():
+        while parent_node is not None and node == parent_node.getRight():  # node is Parent_node right child
             node = parent_node
             parent_node = node.getParent()
         return parent_node
