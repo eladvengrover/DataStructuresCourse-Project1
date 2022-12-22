@@ -283,12 +283,12 @@ class AVLTreeList(object):
 
     """update self fields
 
-    @type: AVLNode 
-    @param: a node represents the new root of self
-    @type: AVLNode
-    @param: a node represents the new first_node of self
-    @type: AVLNode
-    @param: a node represents the new last_node of self
+    @type root: AVLNode 
+    @param root: a node represents the new root of self
+    @type first_node: AVLNode
+    @param first_node: a node represents the new first_node of self
+    @type last_node: AVLNode
+    @param last_node: a node represents the new last_node of self
     """
     def update_tree_fields(self, root, first_node, last_node):
         self.set_root(root)
@@ -672,7 +672,6 @@ class AVLTreeList(object):
         sorted_tree.update_tree_fields(sorted_tree_root, first_node, last_node)
         return sorted_tree
 
-
     """permute the info values of the list 
 
     @rtype: list
@@ -784,7 +783,6 @@ class AVLTreeList(object):
             node = self.concat_helper(lst, self, self_height, False, self_last)
         self.fix_the_tree(node, True)
         return return_val
-
 
     """searches for a *value* in the list
 
