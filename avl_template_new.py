@@ -159,7 +159,7 @@ class AVLNode(object):
         @returns: True if self is a leaf, False otherwise.
         """
     def isLeaf(self):
-        return self.getheight() == 0
+        return self.getHeight() == 0
 
     """set children to be virtual nodes """
     def add_virtual_children(self):
@@ -316,7 +316,7 @@ class AVLTreeList(object):
 
     def retrieve_node(self, i):
         def retrieve_rec(node, k):
-            r = node.left.size + 1
+            r = node.getLeft().getSize() + 1
             if r == k:
                 return node
             elif r > k:
@@ -351,23 +351,22 @@ class AVLTreeList(object):
     """
 
     def insert(self, i, val):
-        n = self.length()
         node = AVLNode(val)
         node.add_virtual_children()
-        if n == 0:
+        if self.empty():
             self.update_tree_fields(node, node, node)
             return 0
-        if i == n:
+        if i == self.length():
             self.get_last_node().setRight(node)
             self.set_last_node(node)
         else:
             if i == 0:
                 self.set_first_node(node)  # Updating self.first
-            prev_node = self.retrieve_node(i)
-            if prev_node.getLeft().isRealNode() is False:  # Case 1: prev_node doesn't have left son
-                prev_node.setLeft(node)
-            else:  # Case 3: prev_node has left son
-                node_predecessor = prev_node.get_predecessor()
+            prev_i_node = self.retrieve_node(i)
+            if prev_i_node.getLeft().isRealNode() is False:  # Case 1: prev_node doesn't have left son
+                prev_i_node.setLeft(node)
+            else:  # Case 2: prev_node has left son
+                node_predecessor = prev_i_node.get_predecessor()
                 node_predecessor.setRight(node)
 
         return self.fix_the_tree(node, False)
@@ -399,7 +398,7 @@ class AVLTreeList(object):
             if fix_to_the_root is False:
                 break
             y = y.getParent()
-        self.fix_nodes_size(starting_node, fix_to_the_root)
+        self.fix_tree_nodes_height_and_sizes(starting_node)
         return rotations_count
 
     """performs rotation on bf_criminal according to its and its child's BF 
@@ -466,7 +465,12 @@ class AVLTreeList(object):
         node_b.fix_node_height_and_size()
         node_a.fix_node_height_and_size()
 
-    def fix_nodes_size(self, starting_node, fix_to_the_root):
+    """fixes all nodes height and size from starting_node all the way to the root
+
+    @type starting_node: AVLNode
+    @param starting_node: the first node to fix its height and size
+    """
+    def fix_tree_nodes_height_and_sizes(self, starting_node):
         y = starting_node.getParent()
         node = starting_node
         if node.isRealNode():
@@ -475,8 +479,6 @@ class AVLTreeList(object):
             y.fix_node_height_and_size()
             node = y
             y = y.getParent()
-        if fix_to_the_root is False:
-            self.set_root(node)
         self.set_size(self.getRoot().getSize())
 
     """deletes the i'th item in the list
