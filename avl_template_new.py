@@ -389,15 +389,15 @@ class AVLTreeList(object):
             y.setHeight(y.calc_height())
             balance_factor = y.getBalanceFactor()
             if abs(balance_factor) < 2 and y.getHeight() == y_old_height:
-                y = y.getParent()
-                continue
+                break
             elif abs(balance_factor) < 2 and y.getHeight() != y_old_height:
                 y = y.getParent()
                 continue
+            y_parent = y.getParent()
             rotations_count += self.perform_rotation(y)
             if fix_to_the_root is False:
                 break
-            y = y.getParent()
+            y = y_parent
         self.fix_tree_nodes_height_and_sizes(starting_node)
         return rotations_count
 
@@ -477,7 +477,6 @@ class AVLTreeList(object):
             node.fix_node_height_and_size()
         while y is not None:
             y.fix_node_height_and_size()
-            node = y
             y = y.getParent()
         self.set_size(self.getRoot().getSize())
 
