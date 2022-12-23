@@ -716,8 +716,8 @@ class AVLTreeList(object):
     @type self_is_bigger: bool
     @param self_is_bigger: True if higher_tree is self, False otherwise
     @type mid_node: AVLNode
-    @param mid_node: a node that going to be in the middle of the concatenated list
-
+    @param mid_node: AVLNode which all keys of one tree are smaller then him,
+    and all keys of the second tree are bigger then him
     @rtype: AVLNode
     @returns: the first node in the concatenated list that is BF criminal suspect
     """
@@ -761,7 +761,7 @@ class AVLTreeList(object):
         if lst.size == 1:
             self.get_last_node().setRight(lst.getRoot())
             self.set_last_node(lst.getRoot())
-            self.fix_the_tree(self.last_node, False)
+            self.fix_the_tree(self.get_last_node(), False)
         elif self.getSize() == 1:  # lst.length() > 1
             lst_first = lst.get_first_node()
             lst.delete(0)
