@@ -406,6 +406,7 @@ class AVLTreeList(object):
     @type bf_criminal: AVLNode
     @param bf_criminal: the node to be rotate
     """
+
     def perform_rotation(self, bf_criminal):
         if bf_criminal.getBalanceFactor() == 2:
             if bf_criminal.getLeft().getBalanceFactor() == -1:
@@ -426,6 +427,7 @@ class AVLTreeList(object):
     @type node_a: AVLNode
     @param node_a: the node to be rotate with his child
     """
+
     def left_rotation(self, node_a):
         node_b = node_a.getRight()
         node_a_parent = node_a.getParent()
@@ -448,6 +450,7 @@ class AVLTreeList(object):
     @type node_b: AVLNode
     @param node_b: the node to be rotate with his child
     """
+
     def right_rotation(self, node_b):
         node_a = node_b.getLeft()
         node_b_parent = node_b.getParent()
@@ -470,6 +473,7 @@ class AVLTreeList(object):
     @type starting_node: AVLNode
     @param starting_node: the first node to fix its height and size
     """
+
     def fix_tree_nodes_height_and_sizes(self, starting_node):
         y = starting_node.getParent()
         node = starting_node
@@ -488,6 +492,7 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
+
     def delete(self, i):
         if self.empty():
             return -1
@@ -517,13 +522,13 @@ class AVLTreeList(object):
 
     """replace node_to_be_replaced with new_node
 
-        @type node_to_be_replaced: AVLNode
-        @param node_to_be_replaced: the node that will be replaced
-        @type new_node: AVLNode
-        @param new_node: the node that will replace node_to_be_replaced 
-        @type has_two_children: bool
-        @param has_two_children: True if node_to_be_replaced has 2 children, False otherwise
-        """
+    @type node_to_be_replaced: AVLNode
+    @param node_to_be_replaced: the node that will be replaced
+    @type new_node: AVLNode
+    @param new_node: the node that will replace node_to_be_replaced 
+    @type has_two_children: bool
+    @param has_two_children: True if node_to_be_replaced has 2 children, False otherwise
+    """
 
     def replace_node(self, node_to_be_replaced, new_node, has_two_children):
         if node_to_be_replaced == self.root:
@@ -637,9 +642,15 @@ class AVLTreeList(object):
             lst2 = AVLTreeList.mergesort(lst[n // 2:])
         return AVLTreeList.merge(lst1, lst2)
 
-    """
+    """returns AVLNode represents the root of a tree,
+    which linked to all other lst elements represented as AVLNodes 
+    
     @type lst: List
-    @param lst: list of AVLNode
+    @param lst: list of AVLNode's values
+    @type begin_index: int
+    @param begin_index: start index in lst to create the tree from
+    @type end_index: int
+    @param end_index: end index in lst to create the tree from
     @rtype: AVLNode
     @returns: AVLNode represents the root of a tree,
     which linked to all other lst elements represented as AVLNodes 
