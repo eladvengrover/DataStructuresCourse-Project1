@@ -536,6 +536,8 @@ class AVLTreeList(object):
         if has_two_children:
             new_node.setRight(node_to_be_replaced.getRight())
             new_node.setLeft(node_to_be_replaced.getLeft())
+            new_node.setHeight(node_to_be_replaced.getHeight())
+            new_node.setSize(node_to_be_replaced.getSize())
 
     """returns the value of the first item in the list
 
