@@ -667,6 +667,22 @@ class AVLTreeList(object):
         median_node.fix_node_height_and_size()
         return median_node
 
+    """returns an AVLTreeList containing all elements in lst  
+
+    @type lst: list
+    @param lst: the list to be "converted" to an AVLTreeList
+    @rtype: AVLTreeList
+    @returns: an AVLTreeList containing all elements in lst
+    """
+    @staticmethod
+    def make_tree_from_list(lst):
+        lst_root = AVLTreeList.create_tree_from_list(lst, 0, len(lst))
+        new_tree = AVLTreeList()
+        first_node = lst_root.get_first_node()
+        last_node = lst_root.get_last_node()
+        new_tree.update_tree_fields(lst_root, first_node, last_node)
+        return new_tree
+
     """sort the info values of the list
 
     @rtype: list
@@ -676,30 +692,19 @@ class AVLTreeList(object):
     def sort(self):
         lst_tree = self.listToArray()
         sorted_lst_tree = AVLTreeList.mergesort(lst_tree, 0, len(lst_tree))
-        sorted_tree_root = AVLTreeList.create_tree_from_list(sorted_lst_tree, 0, len(sorted_lst_tree))
-        sorted_tree = AVLTreeList()
-        first_node = sorted_tree_root.get_first_node()
-        last_node = sorted_tree_root.get_last_node()
-        sorted_tree.update_tree_fields(sorted_tree_root, first_node, last_node)
-        return sorted_tree
+        return AVLTreeList.make_tree_from_list(sorted_lst_tree)
 
     """permute the info values of the list 
 
     @rtype: list
     @returns: an AVLTreeList where the values are permuted randomly by the info of the original list. ##Use Randomness
     """
-
     def permutation(self):
         lst_tree = self.listToArray()
         for i in range(len(lst_tree) - 1, 0, -1):
             random_element_index = random.randint(0, i)
             lst_tree[i], lst_tree[random_element_index] = lst_tree[random_element_index], lst_tree[i]
-        shuffled_tree_root = AVLTreeList.create_tree_from_list(lst_tree, 0, len(lst_tree))
-        shuffled_tree = AVLTreeList()
-        first_node = shuffled_tree_root.get_first_node()
-        last_node = shuffled_tree_root.get_last_node()
-        shuffled_tree.update_tree_fields(shuffled_tree_root, first_node, last_node)
-        return shuffled_tree
+        return AVLTreeList.make_tree_from_list(lst_tree)
 
     """concatenates lower_tree to higher_tree if self_is_bigger is True.
     otherwise, concatenates higher_tree to lower_tree 
