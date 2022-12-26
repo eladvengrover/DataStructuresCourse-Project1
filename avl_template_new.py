@@ -731,12 +731,12 @@ class AVLTreeList(object):
             node_parent.setRight(mid_node)
             mid_node.setRight(lower_tree.getRoot())
             mid_node.setLeft(node)
-            higher_tree.set_last_node(lower_tree.last_node)
+            higher_tree.set_last_node(lower_tree.get_last_node())
         else:
             node_parent.setLeft(mid_node)
             mid_node.setLeft(lower_tree.getRoot())
             mid_node.setRight(node)
-            lower_tree.update_tree_fields(higher_tree.getRoot(), lower_tree.first_node, higher_tree.last_node)
+            lower_tree.update_tree_fields(higher_tree.getRoot(), lower_tree.get_first_node(), higher_tree.get_last_node())
         return node
 
     """concatenates lst to self when one/two of them is empty
@@ -750,7 +750,7 @@ class AVLTreeList(object):
         if self.empty() and lst.empty():
             return 0
         if self.empty():
-            self.update_tree_fields(lst.getRoot(), lst.first_node,  lst.last_node)
+            self.update_tree_fields(lst.getRoot(), lst.get_first_node(),  lst.get_last_node())
         return self.getRoot().getHeight() + 1
 
     """concatenates lst to self when one/two of them has one element
@@ -790,7 +790,7 @@ class AVLTreeList(object):
         self_height = self.getRoot().getHeight()
         if abs(self_height - lst_height) < 2:  # Case 3.1: |height difference| <= 1
             self_last.update_node_fields(lst.getRoot(), self.getRoot(), None)
-            self.update_tree_fields(self_last, self.first_node, lst.last_node)
+            self.update_tree_fields(self_last, self.get_first_node(), lst.get_last_node())
             return return_val
         elif self_height > lst_height:  # Case 3.2: self is higher than lst
             node = AVLTreeList.concat_helper(self, lst, True, self_last)
