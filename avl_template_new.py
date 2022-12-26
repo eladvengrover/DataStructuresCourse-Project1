@@ -706,29 +706,28 @@ class AVLTreeList(object):
             lst_tree[i], lst_tree[random_element_index] = lst_tree[random_element_index], lst_tree[i]
         return AVLTreeList.make_tree_from_list(lst_tree)
 
-    """concatenates lower_tree to higher_tree if self_is_bigger is True.
+    """concatenates lower_tree to higher_tree if self_is_higher is True.
     otherwise, concatenates higher_tree to lower_tree 
     
     @type higher_tree: AVLTreeList
-    @param higher_tree: a list 
+    @param higher_tree: a list
     @type lower_tree: AVLTreeList
     @param lower_tree: a list
-    @type lower_tree_height: int
-    @param lower_tree_height: lower_tree root's height
-    @type self_is_bigger: bool
-    @param self_is_bigger: True if higher_tree is self, False otherwise
+    @type self_is_higher: bool
+    @param self_is_higher: True if higher_tree is self, False otherwise
     @type mid_node: AVLNode
     @param mid_node: AVLNode which all keys of one tree are smaller then him,
     and all keys of the second tree are bigger then him
     @rtype: AVLNode
     @returns: the first node in the concatenated list that is BF criminal suspect
     """
-    def concat_helper(self, higher_tree, lower_tree, lower_tree_height, self_is_bigger, mid_node):
+    @staticmethod
+    def concat_helper(higher_tree, lower_tree, self_is_higher, mid_node):
         node = higher_tree.getRoot()
-        while node.getHeight() > lower_tree_height:
-            node = node.getRight() if self_is_bigger else node.getLeft()
+        while node.getHeight() > lower_tree.getRoot().getHeight():
+            node = node.getRight() if self_is_higher else node.getLeft()
         node_parent = node.getParent()
-        if self_is_bigger:
+        if self_is_higher:
             node_parent.setRight(mid_node)
             mid_node.setRight(lower_tree.getRoot())
             mid_node.setLeft(node)
@@ -767,7 +766,7 @@ class AVLTreeList(object):
         elif self.getSize() == 1:  # lst.length() > 1
             lst_first = lst.get_first_node()
             lst.delete(0)
-            node = self.concat_helper(lst, self, 0, False, lst_first)
+            node = AVLTreeList.concat_helper(lst, self, False, lst_first)
             self.fix_the_tree(node, True)
 
     """concatenates lst to self
@@ -794,9 +793,9 @@ class AVLTreeList(object):
             self.update_tree_fields(self_last, self.first_node, lst.last_node)
             return return_val
         elif self_height > lst_height:  # Case 3.2: self is higher than lst
-            node = self.concat_helper(self, lst, lst_height, True, self_last)
+            node = AVLTreeList.concat_helper(self, lst, True, self_last)
         else:  # Case 3.3: lst is higher than self
-            node = self.concat_helper(lst, self, self_height, False, self_last)
+            node = AVLTreeList.concat_helper(lst, self, False, self_last)
         self.fix_the_tree(node, True)
         return return_val
 
