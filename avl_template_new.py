@@ -192,7 +192,7 @@ class AVLNode(object):
         self.setHeight(self.calc_height())
 
     """returns the predecessor of node in the list
-
+    Complexity: O(log(n))
     @type node: AVLNode
     @param node: node in the list
     @rtype: AVLNode
@@ -209,7 +209,7 @@ class AVLNode(object):
         return parent_node
 
     """returns the successor of node in the list
-
+    Complexity: O(log(n))
     @type node: AVLNode
     @param node: node in the list
     @rtype: AVLNode
@@ -227,7 +227,7 @@ class AVLNode(object):
         return parent_node
 
     """returns the first node in the sub-tree rooted with self
-
+    Complexity: O(log(n))
     @rtype: AVLNode
     @returns: the first node in the sub-tree rooted with self
     """
@@ -238,9 +238,9 @@ class AVLNode(object):
         return node
 
     """returns the last node in the sub-tree rooted with self
-
-     @rtype: AVLNode
-     @returns: the last node in the sub-tree rooted with self
+    Complexity: O(log(n))
+    @rtype: AVLNode
+    @returns: the last node in the sub-tree rooted with self
      """
     def get_last_node(self):
         node = self
@@ -306,7 +306,7 @@ class AVLTreeList(object):
         return self.getSize() == 0
 
     """"retrieves the i'th item in the list
-
+    Complexity: O(log(n))
     @type i: int
     @pre: 0 <= i < self.length() 
     @param i: index in the list
@@ -326,7 +326,7 @@ class AVLTreeList(object):
         return retrieve_rec(self.getRoot(), i + 1)
 
     """retrieves the value of the i'th item in the list
-
+    Complexity: O(log(n))
     @type i: int
     @pre: 0 <= i < self.length()
     @param i: index in the list
@@ -340,7 +340,7 @@ class AVLTreeList(object):
         return None
 
     """inserts val at position i in the list
-
+    Complexity: O(log(n))
     @type i: int
     @pre: 0 <= i <= self.length()
     @param i: The intended index in the list to which we insert val
@@ -372,7 +372,7 @@ class AVLTreeList(object):
         return self.fix_the_tree(node, False)
 
     """Rebalancing the tree after insertion/deletion
-
+    Complexity: O(log(n))
     @type starting_node: AVLNode
     @param starting_node: The node to be insert or physically deleted
     @type insert_or_delete: int
@@ -466,7 +466,7 @@ class AVLTreeList(object):
         node_a.fix_node_height_and_size()
 
     """fixes all nodes height and size from starting_node all the way to the root
-
+    Complexity: O(log(n))
     @type starting_node: AVLNode
     @param starting_node: the first node to fix its height and size
     """
@@ -481,7 +481,7 @@ class AVLTreeList(object):
         self.set_size(self.getRoot().getSize())
 
     """deletes the i'th item in the list
-
+    Complexity: O(log(n))
     @type i: int
     @pre: 0 <= i < self.length()
     @param i: The intended index in the list to be deleted
@@ -558,7 +558,7 @@ class AVLTreeList(object):
         return None if self.empty() else self.get_last_node().getValue()
 
     """returns an array representing list 
-
+    Complexity: O(n)
     @rtype: list
     @returns: a list of strings representing the data structure
     """
@@ -584,7 +584,7 @@ class AVLTreeList(object):
         return self.getSize()
 
     """returns one sorted list containing the elements of both lists A and B
-    
+    Complexity: O(n + m)
     @type A: list
     @pre: A is a sorted list
     @param A: the first list 
@@ -622,7 +622,7 @@ class AVLTreeList(object):
         return C
 
     """returns sorted lst
-    
+    Complexity: O(nlog(n))
     @type lst: list
     @param lst: the list to be sorted
     @rtype: List
@@ -641,7 +641,7 @@ class AVLTreeList(object):
 
     """returns AVLNode represents the root of a tree,
     which linked to all other lst elements represented as AVLNodes 
-    
+    Complexity: O(n)
     @type lst: List
     @param lst: list of AVLNode's values
     @type begin_index: int
@@ -668,7 +668,7 @@ class AVLTreeList(object):
         return median_node
 
     """returns an AVLTreeList containing all elements in lst  
-
+    Complexity: O(n)
     @type lst: list
     @param lst: the list to be "converted" to an AVLTreeList
     @rtype: AVLTreeList
@@ -684,7 +684,7 @@ class AVLTreeList(object):
         return new_tree
 
     """sort the info values of the list
-
+    Complexity: O(nlog(n))
     @rtype: list
     @returns: an AVLTreeList where the values are sorted by the info of the original list.
     """
@@ -695,7 +695,7 @@ class AVLTreeList(object):
         return AVLTreeList.make_tree_from_list(sorted_lst_tree)
 
     """permute the info values of the list 
-
+    Complexity: O(n)
     @rtype: list
     @returns: an AVLTreeList where the values are permuted randomly by the info of the original list. ##Use Randomness
     """
@@ -708,7 +708,7 @@ class AVLTreeList(object):
 
     """concatenates lower_tree to higher_tree if self_is_higher is True.
     otherwise, concatenates higher_tree to lower_tree 
-    
+    Complexity: O(log(n))
     @type higher_tree: AVLTreeList
     @param higher_tree: a list
     @type lower_tree: AVLTreeList
@@ -754,7 +754,7 @@ class AVLTreeList(object):
         return self.getRoot().getHeight() + 1
 
     """concatenates lst to self when one/two of them has one element
-
+    Complexity: O(log(n))
     @type lst: AVLTreeList
     @param lst: a list to be concatenated after self
     """
@@ -770,7 +770,7 @@ class AVLTreeList(object):
             self.fix_the_tree(node, True)
 
     """concatenates lst to self
-
+    Complexity: O(log(n))
     @type lst: AVLTreeList
     @param lst: a list to be concatenated after self
     @rtype: int
@@ -800,7 +800,7 @@ class AVLTreeList(object):
         return return_val
 
     """searches for a *value* in the list
-
+    Complexity: O(n)
     @type val: str
     @param val: a value to be searched
     @rtype: int
