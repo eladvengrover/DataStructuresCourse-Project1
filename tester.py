@@ -11,11 +11,10 @@ for i in range(1, 11):
     for j in range(n):
         random_position = random.randint(0, lst.length())
         insert_count += lst.insert(random_position, str(j))
-    print("i = ", i, ", insert_count = ", insert_count)
-    # for j in range(n):
-    #     random_position = random.randint(0, lst.length() - 1)
-    #     delete_count += lst.delete(random_position)
-    # print("i = ", i, ", insert_count = ", insert_count, ", delete_count = ", delete_count)
+    for j in range(n):
+        random_position = random.randint(0, lst.length() - 1)
+        delete_count += lst.delete(random_position)
+    print("i = ", i, ", insert_count = ", insert_count, ", delete_count = ", delete_count)
 
 
 

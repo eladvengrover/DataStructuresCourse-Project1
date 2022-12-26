@@ -406,7 +406,6 @@ class AVLTreeList(object):
     @type bf_criminal: AVLNode
     @param bf_criminal: the node to be rotate
     """
-
     def perform_rotation(self, bf_criminal):
         if bf_criminal.getBalanceFactor() == 2:
             if bf_criminal.getLeft().getBalanceFactor() == -1:
@@ -427,7 +426,6 @@ class AVLTreeList(object):
     @type node_a: AVLNode
     @param node_a: the node to be rotate with his child
     """
-
     def left_rotation(self, node_a):
         node_b = node_a.getRight()
         node_a_parent = node_a.getParent()
@@ -450,7 +448,6 @@ class AVLTreeList(object):
     @type node_b: AVLNode
     @param node_b: the node to be rotate with his child
     """
-
     def right_rotation(self, node_b):
         node_a = node_b.getLeft()
         node_b_parent = node_b.getParent()
@@ -473,7 +470,6 @@ class AVLTreeList(object):
     @type starting_node: AVLNode
     @param starting_node: the first node to fix its height and size
     """
-
     def fix_tree_nodes_height_and_sizes(self, starting_node):
         y = starting_node.getParent()
         node = starting_node
@@ -492,7 +488,6 @@ class AVLTreeList(object):
     @rtype: int
     @returns: the number of rebalancing operation due to AVL rebalancing
     """
-
     def delete(self, i):
         if self.empty():
             return -1
@@ -588,7 +583,8 @@ class AVLTreeList(object):
     def length(self):
         return self.getSize()
 
-    """
+    """returns one sorted list containing the elements of both lists A and B
+    
     @type A: list
     @pre: A is a sorted list
     @param A: the first list 
@@ -625,7 +621,8 @@ class AVLTreeList(object):
                 c += 1
         return C
 
-    """
+    """returns sorted lst
+    
     @type lst: list
     @param lst: the list to be sorted
     @rtype: List
@@ -633,13 +630,13 @@ class AVLTreeList(object):
     """
 
     @staticmethod
-    def mergesort(lst):
-        n = len(lst)
+    def mergesort(lst, start_index, end_index):
+        n = end_index - start_index
         if n <= 1:
             return lst
         else:
-            lst1 = AVLTreeList.mergesort(lst[:n // 2])
-            lst2 = AVLTreeList.mergesort(lst[n // 2:])
+            lst1 = AVLTreeList.mergesort(lst, start_index, start_index + (n // 2))
+            lst2 = AVLTreeList.mergesort(lst, start_index + (n // 2), end_index)
         return AVLTreeList.merge(lst1, lst2)
 
     """returns AVLNode represents the root of a tree,
@@ -678,7 +675,7 @@ class AVLTreeList(object):
 
     def sort(self):
         lst_tree = self.listToArray()
-        sorted_lst_tree = AVLTreeList.mergesort(lst_tree)
+        sorted_lst_tree = AVLTreeList.mergesort(lst_tree, 0, len(lst_tree))
         sorted_tree_root = AVLTreeList.create_tree_from_list(sorted_lst_tree, 0, len(sorted_lst_tree))
         sorted_tree = AVLTreeList()
         first_node = sorted_tree_root.get_first_node()
