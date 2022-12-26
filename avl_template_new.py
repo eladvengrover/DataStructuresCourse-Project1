@@ -200,7 +200,7 @@ class AVLNode(object):
     """
     def get_predecessor(self):
         if self.getLeft().isRealNode():
-            return self.getLeft().get_last_node()
+            return self.getLeft().find_last_node()
         node = self
         parent_node = node.getParent()
         while parent_node is not None and node == parent_node.getLeft():  # node is Parent_node left child
@@ -218,7 +218,7 @@ class AVLNode(object):
 
     def get_successor(self):
         if self.getRight().isRealNode():
-            return self.getRight().get_first_node()
+            return self.getRight().find_first_node()
         node = self
         parent_node = node.getParent()
         while parent_node is not None and node == parent_node.getRight():  # node is Parent_node right child
@@ -231,7 +231,7 @@ class AVLNode(object):
     @rtype: AVLNode
     @returns: the first node in the sub-tree rooted with self
     """
-    def get_first_node(self):
+    def find_first_node(self):
         node = self
         while node.getLeft().isRealNode():
             node = node.getLeft()
@@ -242,7 +242,7 @@ class AVLNode(object):
     @rtype: AVLNode
     @returns: the last node in the sub-tree rooted with self
      """
-    def get_last_node(self):
+    def find_last_node(self):
         node = self
         while node.getRight().isRealNode():
             node = node.getRight()
@@ -678,8 +678,8 @@ class AVLTreeList(object):
     def make_tree_from_list(lst):
         lst_root = AVLTreeList.create_tree_from_list(lst, 0, len(lst))
         new_tree = AVLTreeList()
-        first_node = lst_root.get_first_node()
-        last_node = lst_root.get_last_node()
+        first_node = lst_root.find_first_node()
+        last_node = lst_root.find_last_node()
         new_tree.update_tree_fields(lst_root, first_node, last_node)
         return new_tree
 
