@@ -885,12 +885,3 @@ class AVLTreeList(object):
     """
     def set_last_node(self, last_node):
         self.last_node = last_node
-
-    def __repr__(self):
-        return ','.join(self.listToArray())
-
-    def append(self, val):
-        return self.insert(self.length(), val)
-
-    def getTreeHeight(self):
-        return self.root.getHeight()
