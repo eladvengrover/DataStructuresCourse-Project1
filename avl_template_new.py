@@ -16,13 +16,13 @@ class AVLNode(object):
     @param value: data of your node
     """
 
-    def __init__(self, value):
+    def __init__(self, value, is_real=True):
         self.value = value
         self.left = None
         self.right = None
         self.parent = None
-        self.height = -1 if value is None else 0
-        self.isReal = False if value is None else True
+        self.height = 0 if is_real else -1
+        self.isReal = is_real
         self.size = 1 if self.isReal else 0
 
     """returns the left child
@@ -66,7 +66,7 @@ class AVLNode(object):
     @rtype: int
     @returns: the height of self, -1 if the node is virtual
     """
-
+#TODO - maybe return just self.height?
     def getHeight(self):
         return self.height if self.isRealNode() else -1
 
@@ -163,8 +163,8 @@ class AVLNode(object):
 
     """set children to be virtual nodes """
     def add_virtual_children(self):
-        self.setLeft(AVLNode(None))
-        self.setRight(AVLNode(None))
+        self.setLeft(AVLNode(None, False))
+        self.setRight(AVLNode(None, False))
 
     """calculates self's height according to its children
     @pre: self.isRealNode() is True
@@ -501,7 +501,7 @@ class AVLTreeList(object):
         if i == self.length() - 1:
             self.set_last_node(node_to_delete.get_predecessor())
         if node_to_delete.isLeaf():  # Case 1: leaf
-            self.replace_node(node_to_delete, AVLNode(None), False)
+            self.replace_node(node_to_delete, AVLNode(None, False), False)
         elif node_to_delete.getRight().isRealNode() is False or node_to_delete.getLeft().isRealNode() is False:
             # Case 2: has only 1 child
             node_to_delete_son = node_to_delete.getRight() \
@@ -633,7 +633,7 @@ class AVLTreeList(object):
     def mergesort(lst, start_index, end_index):
         n = end_index - start_index
         if n <= 1:
-            return lst
+            return [lst[start_index]]
         else:
             lst1 = AVLTreeList.mergesort(lst, start_index, start_index + (n // 2))
             lst2 = AVLTreeList.mergesort(lst, start_index + (n // 2), end_index)
@@ -659,7 +659,7 @@ class AVLTreeList(object):
             new_node.add_virtual_children()
             return new_node
         if end_index == begin_index:
-            return AVLNode(None)
+            return AVLNode(None, False)
         median_index = begin_index + ((end_index - begin_index) // 2)
         median_node = AVLNode(lst[median_index])
         median_node.setLeft(AVLTreeList.create_tree_from_list(lst, begin_index, median_index))
@@ -676,6 +676,8 @@ class AVLTreeList(object):
     """
     @staticmethod
     def make_tree_from_list(lst):
+        if len(lst) == 0:
+            return AVLTreeList()
         lst_root = AVLTreeList.create_tree_from_list(lst, 0, len(lst))
         new_tree = AVLTreeList()
         first_node = lst_root.find_first_node()
@@ -691,8 +693,14 @@ class AVLTreeList(object):
 
     def sort(self):
         lst_tree = self.listToArray()
-        sorted_lst_tree = AVLTreeList.mergesort(lst_tree, 0, len(lst_tree))
-        return AVLTreeList.make_tree_from_list(sorted_lst_tree)
+        lst_without_none = [lst_tree[i] for i in range(len(lst_tree)) if lst_tree[i] is not None]
+        none_count = len(lst_tree) - len(lst_without_none)
+        sorted_lst = []
+        if none_count != len(lst_tree):
+            sorted_lst = AVLTreeList.mergesort(lst_without_none, 0, len(lst_without_none))
+        for i in range(none_count):
+            sorted_lst.append(None)
+        return AVLTreeList.make_tree_from_list(sorted_lst)
 
     """permute the info values of the list 
     Complexity: O(n)
