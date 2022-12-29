@@ -66,9 +66,8 @@ class AVLNode(object):
     @rtype: int
     @returns: the height of self, -1 if the node is virtual
     """
-#TODO - maybe return just self.height?
     def getHeight(self):
-        return self.height if self.isRealNode() else -1
+        return self.height
 
     """returns the balance factor
     
